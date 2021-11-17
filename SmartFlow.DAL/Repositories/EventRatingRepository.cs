@@ -12,16 +12,16 @@ namespace SmartFlow.DAL.Repositories
 {
     public class EventRatingRepository : IRepository<EventRating>
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
 
-        public EventRatingRepository(SmartFlowContext dataBase)
+        public EventRatingRepository(SmartFlowContext database)
         {
-            this.dataBase = dataBase;
+            this.database = database;
         }
 
         public EventRating Get(int id)
         {
-            return dataBase.eventRatings
+            return database.eventRatings
                 .Include(rating => rating.Visitor)
                 .Include(rating => rating.Event)
                 .SingleOrDefault(rating => rating.EventRatingID == id);
@@ -29,7 +29,7 @@ namespace SmartFlow.DAL.Repositories
 
         public IEnumerable<EventRating> GetAll()
         {
-            return dataBase.eventRatings
+            return database.eventRatings
                 .Include(rating => rating.Visitor)
                 .Include(rating => rating.Event)
                 .ToList();
@@ -37,12 +37,12 @@ namespace SmartFlow.DAL.Repositories
 
         public int Create(EventRating rating)
         {
-            rating.Visitor = dataBase.visitors
+            rating.Visitor = database.visitors
                 .Find(rating.Visitor.VisitorID);
-            rating.Event = dataBase.events
+            rating.Event = database.events
                 .Find(rating.Event.EventID);
-            dataBase.eventRatings.Add(rating);
-            dataBase.SaveChanges();
+            database.eventRatings.Add(rating);
+            database.SaveChanges();
 
             return rating.EventRatingID;
         }
@@ -52,21 +52,21 @@ namespace SmartFlow.DAL.Repositories
             EventRating rating = Get(id);
             if (rating != null)
             {
-                dataBase.eventRatings.Remove(rating);
+                database.eventRatings.Remove(rating);
             }
         }
 
         public void Update(EventRating rating)
         {
-            var toUpdateRating = dataBase.eventRatings.FirstOrDefault(
+            var toUpdateRating = database.eventRatings.FirstOrDefault(
                 eventRating => 
                 eventRating.EventRatingID == rating.EventRatingID);
             if (toUpdateRating != null)
             {
                 toUpdateRating.EventRatingID = rating.EventRatingID;
-                toUpdateRating.Visitor = dataBase.visitors
+                toUpdateRating.Visitor = database.visitors
                     .Find(rating.Visitor.VisitorID);
-                toUpdateRating.Event = dataBase.events
+                toUpdateRating.Event = database.events
                     .Find(rating.Event.EventID);
                 toUpdateRating.Score = rating.Score;
                 toUpdateRating.ScoreDate = rating.ScoreDate;

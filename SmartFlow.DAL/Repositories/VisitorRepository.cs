@@ -11,27 +11,27 @@ namespace SmartFlow.DAL.Repositories
 {
     public class VisitorRepository : IRepository<Visitor>
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
 
-        public VisitorRepository(SmartFlowContext dataBase)
+        public VisitorRepository(SmartFlowContext database)
         {
-            this.dataBase = dataBase;
+            this.database = database;
         }
 
         public Visitor Get(int id)
         {
-            return dataBase.visitors.Find(id);
+            return database.visitors.Find(id);
         }
 
         public IEnumerable<Visitor> GetAll()
         {
-            return dataBase.visitors.ToList();
+            return database.visitors.ToList();
         }
 
         public int Create(Visitor visitor)
         {
-            dataBase.visitors.Add(visitor);
-            dataBase.SaveChanges();
+            database.visitors.Add(visitor);
+            database.SaveChanges();
 
             return visitor.VisitorID;
         }
@@ -41,13 +41,13 @@ namespace SmartFlow.DAL.Repositories
             Visitor visitor = Get(id);
             if (visitor != null)
             {
-                dataBase.visitors.Remove(visitor);
+                database.visitors.Remove(visitor);
             }
         }
 
         public void Update(Visitor visitor)
         {
-            var toUpdateVisitor = dataBase.visitors.FirstOrDefault(
+            var toUpdateVisitor = database.visitors.FirstOrDefault(
                 currentVisitor => currentVisitor.VisitorID == visitor.VisitorID);
             if (toUpdateVisitor != null)
             {

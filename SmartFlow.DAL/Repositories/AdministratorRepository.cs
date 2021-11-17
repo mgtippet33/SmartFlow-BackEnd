@@ -11,27 +11,27 @@ namespace SmartFlow.DAL.Repositories
 {
     public class AdministratorRepository : IRepository<Administrator>
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
 
-        public AdministratorRepository(SmartFlowContext dataBase)
+        public AdministratorRepository(SmartFlowContext database)
         {
-            this.dataBase = dataBase;
+            this.database = database;
         }
 
         public Administrator Get(int id)
         {
-            return dataBase.administrators.Find(id);
+            return database.administrators.Find(id);
         }
 
         public IEnumerable<Administrator> GetAll()
         {
-            return dataBase.administrators.ToList();
+            return database.administrators.ToList();
         }
 
         public int Create(Administrator administrator)
         {
-            dataBase.administrators.Add(administrator);
-            dataBase.SaveChanges();
+            database.administrators.Add(administrator);
+            database.SaveChanges();
 
             return administrator.AdministratorID;
         }
@@ -41,13 +41,13 @@ namespace SmartFlow.DAL.Repositories
             Administrator administrator = Get(id);
             if (administrator != null)
             {
-                dataBase.administrators.Remove(administrator);
+                database.administrators.Remove(administrator);
             }
         }
 
         public void Update(Administrator administrator)
         {
-            var toUpdateAdmin = dataBase.administrators.FirstOrDefault(
+            var toUpdateAdmin = database.administrators.FirstOrDefault(
                 admin => admin.AdministratorID == administrator.AdministratorID);
             if (toUpdateAdmin != null)
             {

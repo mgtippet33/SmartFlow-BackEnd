@@ -11,27 +11,27 @@ namespace SmartFlow.DAL.Repositories
 {
     public class BusinessPartnerRepository : IRepository<BusinessPartner>
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
 
-        public BusinessPartnerRepository(SmartFlowContext dataBase)
+        public BusinessPartnerRepository(SmartFlowContext database)
         {
-            this.dataBase = dataBase;
+            this.database = database;
         }
 
         public BusinessPartner Get(int id)
         {
-            return dataBase.businessPartners.Find(id);
+            return database.businessPartners.Find(id);
         }
 
         public IEnumerable<BusinessPartner> GetAll()
         {
-            return dataBase.businessPartners.ToList();
+            return database.businessPartners.ToList();
         }
 
         public int Create(BusinessPartner businessPartner)
         {
-            dataBase.businessPartners.Add(businessPartner);
-            dataBase.SaveChanges();
+            database.businessPartners.Add(businessPartner);
+            database.SaveChanges();
 
             return businessPartner.BusinessPartnerID;
         }
@@ -41,13 +41,13 @@ namespace SmartFlow.DAL.Repositories
             BusinessPartner businessPartner = Get(id);
             if (businessPartner != null)
             {
-                dataBase.businessPartners.Remove(businessPartner);
+                database.businessPartners.Remove(businessPartner);
             }
         }
 
         public void Update(BusinessPartner businessPartner)
         {
-            var toUpdatePartner = dataBase.businessPartners.FirstOrDefault(
+            var toUpdatePartner = database.businessPartners.FirstOrDefault(
                 partner => partner.BusinessPartnerID == businessPartner.BusinessPartnerID);
             if (toUpdatePartner != null)
             {

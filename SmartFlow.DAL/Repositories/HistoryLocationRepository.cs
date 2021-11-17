@@ -12,16 +12,16 @@ namespace SmartFlow.DAL.Repositories
 {
     public class HistoryLocationRepository : IRepository<HistoryLocation>
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
 
-        public HistoryLocationRepository(SmartFlowContext dataBase)
+        public HistoryLocationRepository(SmartFlowContext database)
         {
-            this.dataBase = dataBase;
+            this.database = database;
         }
 
         public HistoryLocation Get(int id)
         {
-            return dataBase.historyLocations
+            return database.historyLocations
                 .Include(history => history.Location)
                 .Include(history => history.Visitor)
                 .SingleOrDefault(history => history.HistoryLocationID == id);
@@ -29,7 +29,7 @@ namespace SmartFlow.DAL.Repositories
 
         public IEnumerable<HistoryLocation> GetAll()
         {
-            return dataBase.historyLocations
+            return database.historyLocations
                 .Include(history => history.Location)
                 .Include(history => history.Visitor)
                 .ToList();
@@ -37,12 +37,12 @@ namespace SmartFlow.DAL.Repositories
 
         public int Create(HistoryLocation history)
         {
-            history.Visitor = dataBase.visitors
+            history.Visitor = database.visitors
                 .Find(history.Visitor.VisitorID);
-            history.Location = dataBase.locations
+            history.Location = database.locations
                 .Find(history.Location.LocationID);
-            dataBase.historyLocations.Add(history);
-            dataBase.SaveChanges();
+            database.historyLocations.Add(history);
+            database.SaveChanges();
 
             return history.HistoryLocationID;
         }
@@ -52,21 +52,21 @@ namespace SmartFlow.DAL.Repositories
             HistoryLocation history = Get(id);
             if (history != null)
             {
-                dataBase.historyLocations.Remove(history);
+                database.historyLocations.Remove(history);
             }
         }
 
         public void Update(HistoryLocation history)
         {
-            var toUpdateHistory = dataBase.historyLocations.FirstOrDefault(
+            var toUpdateHistory = database.historyLocations.FirstOrDefault(
                 eventHistory =>
                 eventHistory.HistoryLocationID == history.HistoryLocationID);
             if (toUpdateHistory != null)
             {
                 toUpdateHistory.HistoryLocationID = history.HistoryLocationID;
-                toUpdateHistory.Visitor = dataBase.visitors
+                toUpdateHistory.Visitor = database.visitors
                     .Find(history.Visitor.VisitorID);
-                toUpdateHistory.Location = dataBase.locations
+                toUpdateHistory.Location = database.locations
                     .Find(history.Location.LocationID);
                 toUpdateHistory.Action = history.Action ?? toUpdateHistory.Action;
                 toUpdateHistory.ActionTime = history.ActionTime;

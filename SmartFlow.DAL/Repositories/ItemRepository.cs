@@ -12,31 +12,31 @@ namespace SmartFlow.DAL.Repositories
 {
     public class ItemRepository : IRepository<Item>
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
 
-        public ItemRepository(SmartFlowContext dataBase)
+        public ItemRepository(SmartFlowContext database)
         {
-            this.dataBase = dataBase;
+            this.database = database;
         }
 
         public Item Get(int id)
         {
-            return dataBase.items
+            return database.items
                 .Include(item => item.Location)
                 .SingleOrDefault(item => item.ItemID == id);
         }
 
         public IEnumerable<Item> GetAll()
         {
-            return dataBase.items.Include(item => item.Location).ToList();
+            return database.items.Include(item => item.Location).ToList();
         }
 
         public int Create(Item item)
         {
-            item.Location = dataBase.locations
+            item.Location = database.locations
                 .Find(item.Location.LocationID);
-            dataBase.items.Add(item);
-            dataBase.SaveChanges();
+            database.items.Add(item);
+            database.SaveChanges();
 
             return item.ItemID;
         }
@@ -46,18 +46,18 @@ namespace SmartFlow.DAL.Repositories
             Item item = Get(id);
             if (item != null)
             {
-                dataBase.items.Remove(item);
+                database.items.Remove(item);
             }
         }
 
         public void Update(Item item)
         {
-            var toUpdateItem = dataBase.items.FirstOrDefault(
+            var toUpdateItem = database.items.FirstOrDefault(
                 itm => itm.ItemID == item.ItemID);
             if (toUpdateItem != null)
             {
                 toUpdateItem.ItemID = item.ItemID;
-                toUpdateItem.Location = dataBase.locations.
+                toUpdateItem.Location = database.locations.
                     Find(item.Location.LocationID);
                 toUpdateItem.Name = item.Name ?? toUpdateItem.Name;
                 toUpdateItem.Description = item.Description ?? toUpdateItem.Description;

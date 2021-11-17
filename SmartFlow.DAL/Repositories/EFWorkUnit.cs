@@ -11,7 +11,7 @@ namespace SmartFlow.DAL.Repositories
 {
     public class EFWorkUnit : IWorkUnit
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
         private AdministratorRepository administratorRepository;
         private VisitorRepository visitorRepository;
         private BusinessPartnerRepository businessPartnerRepository;
@@ -23,7 +23,7 @@ namespace SmartFlow.DAL.Repositories
 
         public EFWorkUnit(SmartFlowContext context)
         {
-            dataBase = context;
+            database = context;
         }
 
         public IRepository<Administrator> Administrators
@@ -32,7 +32,7 @@ namespace SmartFlow.DAL.Repositories
             {
                 if (administratorRepository != null)
                 {
-                    administratorRepository = new AdministratorRepository(dataBase);
+                    administratorRepository = new AdministratorRepository(database);
                 }
                 return administratorRepository;
             }
@@ -44,7 +44,7 @@ namespace SmartFlow.DAL.Repositories
             {
                 if (visitorRepository != null)
                 {
-                    visitorRepository = new VisitorRepository(dataBase);
+                    visitorRepository = new VisitorRepository(database);
                 }
                 return visitorRepository;
             }
@@ -56,7 +56,7 @@ namespace SmartFlow.DAL.Repositories
             {
                 if (businessPartnerRepository != null)
                 {
-                    businessPartnerRepository = new BusinessPartnerRepository(dataBase);
+                    businessPartnerRepository = new BusinessPartnerRepository(database);
                 }
                 return businessPartnerRepository;
             }
@@ -68,7 +68,7 @@ namespace SmartFlow.DAL.Repositories
             {
                 if (eventRepository != null)
                 {
-                    eventRepository = new EventRepository(dataBase);
+                    eventRepository = new EventRepository(database);
                 }
                 return eventRepository;
             }
@@ -80,7 +80,7 @@ namespace SmartFlow.DAL.Repositories
             {
                 if (locationRepository != null)
                 {
-                    locationRepository = new LocationRepository(dataBase);
+                    locationRepository = new LocationRepository(database);
                 }
                 return locationRepository;
             }
@@ -92,7 +92,7 @@ namespace SmartFlow.DAL.Repositories
             {
                 if (itemRepository != null)
                 {
-                    itemRepository = new ItemRepository(dataBase);
+                    itemRepository = new ItemRepository(database);
                 }
                 return itemRepository;
             }
@@ -104,7 +104,7 @@ namespace SmartFlow.DAL.Repositories
             {
                 if (eventRatingRepository != null)
                 {
-                    eventRatingRepository = new EventRatingRepository(dataBase);
+                    eventRatingRepository = new EventRatingRepository(database);
                 }
                 return eventRatingRepository;
             }
@@ -116,7 +116,7 @@ namespace SmartFlow.DAL.Repositories
             {
                 if (historyLocationRepository != null)
                 {
-                    historyLocationRepository = new HistoryLocationRepository(dataBase);
+                    historyLocationRepository = new HistoryLocationRepository(database);
                 }
                 return historyLocationRepository;
             }
@@ -124,7 +124,7 @@ namespace SmartFlow.DAL.Repositories
 
         public void Save()
         {
-            dataBase.SaveChanges();
+            database.SaveChanges();
         }
     }
 }

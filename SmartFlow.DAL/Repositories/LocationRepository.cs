@@ -12,33 +12,33 @@ namespace SmartFlow.DAL.Repositories
 {
     public class LocationRepository : IRepository<Location>
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
 
-        public LocationRepository(SmartFlowContext dataBase)
+        public LocationRepository(SmartFlowContext database)
         {
-            this.dataBase = dataBase;
+            this.database = database;
         }
 
         public Location Get(int id)
         {
-            return dataBase.locations
+            return database.locations
                 .Include(location => location.Event)
                 .SingleOrDefault(location => location.LocationID == id);
         }
 
         public IEnumerable<Location> GetAll()
         {
-            return dataBase.locations
+            return database.locations
                 .Include(location => location.Event)
                 .ToList();
         }
 
         public int Create(Location location)
         {
-            location.Event = dataBase.events
+            location.Event = database.events
                 .Find(location.Event.EventID);
-            dataBase.locations.Add(location);
-            dataBase.SaveChanges();
+            database.locations.Add(location);
+            database.SaveChanges();
 
             return location.LocationID;
         }
@@ -48,18 +48,18 @@ namespace SmartFlow.DAL.Repositories
             Location location = Get(id);
             if (location != null)
             {
-                dataBase.locations.Remove(location);
+                database.locations.Remove(location);
             }
         }
 
         public void Update(Location location)
         {
-            var toUpdateLocation = dataBase.locations.FirstOrDefault(
+            var toUpdateLocation = database.locations.FirstOrDefault(
                 loc => loc.EventID == location.EventID);
             if (toUpdateLocation != null)
             {
                 toUpdateLocation.LocationID = location.LocationID;
-                toUpdateLocation.Event = dataBase.events.
+                toUpdateLocation.Event = database.events.
                     Find(location.Event.EventID);
                 toUpdateLocation.Name = location.Name ?? toUpdateLocation.Name;
                 toUpdateLocation.Description = location.Description ?? toUpdateLocation.Description;

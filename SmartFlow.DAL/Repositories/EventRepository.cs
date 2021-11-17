@@ -12,33 +12,33 @@ namespace SmartFlow.DAL.Repositories
 {
     public class EventRepository : IRepository<Event>
     {
-        private SmartFlowContext dataBase;
+        private SmartFlowContext database;
 
-        public EventRepository(SmartFlowContext dataBase)
+        public EventRepository(SmartFlowContext database)
         {
-            this.dataBase = dataBase;
+            this.database = database;
         }
 
         public Event Get(int id)
         {
-            return dataBase.events
+            return database.events
                 .Include(currentEvent => currentEvent.BusinessPartner)
                 .SingleOrDefault(currentEvent => currentEvent.EventID == id);
         }
 
         public IEnumerable<Event> GetAll()
         {
-            return dataBase.events
+            return database.events
                 .Include(currentEvent => currentEvent.BusinessPartner)
                 .ToList();
         }
 
         public int Create(Event currentEvent)
         {
-            currentEvent.BusinessPartner = dataBase.businessPartners
+            currentEvent.BusinessPartner = database.businessPartners
                 .Find(currentEvent.BusinessPartner.BusinessPartnerID);
-            dataBase.events.Add(currentEvent);
-            dataBase.SaveChanges();
+            database.events.Add(currentEvent);
+            database.SaveChanges();
 
             return currentEvent.EventID;
         }
@@ -48,18 +48,18 @@ namespace SmartFlow.DAL.Repositories
             Event currentEvent = Get(id);
             if (currentEvent != null)
             {
-                dataBase.events.Remove(currentEvent);
+                database.events.Remove(currentEvent);
             }
         }
 
         public void Update(Event currrentEvent)
         {
-            var toUpdateEvent = dataBase.events.FirstOrDefault(
+            var toUpdateEvent = database.events.FirstOrDefault(
                 ev => ev.EventID == currrentEvent.EventID);
             if (toUpdateEvent != null)
             {
                 toUpdateEvent.EventID = currrentEvent.EventID;
-                toUpdateEvent.BusinessPartner = dataBase.businessPartners.
+                toUpdateEvent.BusinessPartner = database.businessPartners.
                     Find(currrentEvent.BusinessPartner.BusinessPartnerID);
                 toUpdateEvent.Name = currrentEvent.Name ?? toUpdateEvent.Name;
                 toUpdateEvent.Description = currrentEvent.Description ?? toUpdateEvent.Description;
