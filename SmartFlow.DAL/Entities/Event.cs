@@ -8,16 +8,17 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.DAL.Entities
 {
+    [Table("event")]
     public class Event
     {
         [Key]
-        public int EventID;
+        public int EventID { set; get; }
         public int BusinessPartnerID;
-        public string Name;
-        public string Description;
-        public string Coordinates;
-        public TimeSpan OpenTime;
-        public TimeSpan CloseTime;
+        public string Name { set; get; }
+        public string Description { set; get; }
+        public string Coordinates { set; get; }
+        public TimeSpan OpenTime { set; get; }
+        public TimeSpan CloseTime { set; get; }
 
         [ForeignKey("BusinessPartnerID")]
         public virtual BusinessPartner BusinessPartner { set; get; }

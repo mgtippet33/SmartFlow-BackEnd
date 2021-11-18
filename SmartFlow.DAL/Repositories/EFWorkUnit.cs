@@ -30,7 +30,7 @@ namespace SmartFlow.DAL.Repositories
         {
             get
             {
-                if (administratorRepository != null)
+                if (administratorRepository == null)
                 {
                     administratorRepository = new AdministratorRepository(database);
                 }
@@ -42,7 +42,7 @@ namespace SmartFlow.DAL.Repositories
         {
             get
             {
-                if (visitorRepository != null)
+                if (visitorRepository == null)
                 {
                     visitorRepository = new VisitorRepository(database);
                 }
@@ -54,7 +54,7 @@ namespace SmartFlow.DAL.Repositories
         {
             get
             {
-                if (businessPartnerRepository != null)
+                if (businessPartnerRepository == null)
                 {
                     businessPartnerRepository = new BusinessPartnerRepository(database);
                 }
@@ -66,7 +66,7 @@ namespace SmartFlow.DAL.Repositories
         {
             get
             {
-                if (eventRepository != null)
+                if (eventRepository == null)
                 {
                     eventRepository = new EventRepository(database);
                 }
@@ -78,7 +78,7 @@ namespace SmartFlow.DAL.Repositories
         {
             get
             {
-                if (locationRepository != null)
+                if (locationRepository == null)
                 {
                     locationRepository = new LocationRepository(database);
                 }
@@ -90,7 +90,7 @@ namespace SmartFlow.DAL.Repositories
         {
             get
             {
-                if (itemRepository != null)
+                if (itemRepository == null)
                 {
                     itemRepository = new ItemRepository(database);
                 }
@@ -102,7 +102,7 @@ namespace SmartFlow.DAL.Repositories
         {
             get
             {
-                if (eventRatingRepository != null)
+                if (eventRatingRepository == null)
                 {
                     eventRatingRepository = new EventRatingRepository(database);
                 }
@@ -114,7 +114,7 @@ namespace SmartFlow.DAL.Repositories
         {
             get
             {
-                if (historyLocationRepository != null)
+                if (historyLocationRepository == null)
                 {
                     historyLocationRepository = new HistoryLocationRepository(database);
                 }

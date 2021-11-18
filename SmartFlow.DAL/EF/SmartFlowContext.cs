@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.DAL.EF
 {
-    public class SmartFlowContext: DbContext
+    public class SmartFlowContext : DbContext
     {
         internal DbSet<Administrator> administrators { get; set; }
         internal DbSet<Visitor> visitors { get; set; }
@@ -24,9 +24,39 @@ namespace SmartFlow.DAL.EF
             Database.EnsureCreated();
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5433;Database=smartflowdb;Username=postgres;Password=admin");
+            modelBuilder.Entity<Administrator>()
+                .Property(admin => admin.AdministratorID)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<BusinessPartner>()
+                .Property(partner => partner.BusinessPartnerID)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Visitor>()
+                .Property(visitor => visitor.VisitorID)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Event>()
+                .Property(currentEvent => currentEvent.EventID)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Location>()
+                .Property(location => location.LocationID)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Item>()
+                .Property(item => item.ItemID)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<EventRating>()
+                .Property(rating => rating.EventRatingID)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<HistoryLocation>()
+                .Property(history => history.HistoryLocationID)
+                .ValueGeneratedOnAdd();
         }
     }
 }

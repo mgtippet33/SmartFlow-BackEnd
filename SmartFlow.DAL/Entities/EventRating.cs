@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.DAL.Entities
 {
+    [Table("eventRating")]
     public class EventRating
     {
         [Key]
-        public int EventRatingID;
+        public int EventRatingID { set; get; }
         public int VisitorID;
         public int EventID;
-        public double Score;
-        public DateTime ScoreDate;
+        public double Score { set; get; }
+        public DateTime ScoreDate { set; get; }
 
         [ForeignKey("VisitorID")]
         public virtual Visitor Visitor { set; get; }
