@@ -75,10 +75,10 @@ namespace SmartFlow.API.Controllers
         [HttpPost]
         public void Post([FromBody] EventModel value)
         {
-            try
-            {
+            //try
+            //{
 
-            }
+            //}
         }
 
         // PUT api/<EventController>/5

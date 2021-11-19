@@ -21,9 +21,9 @@ namespace SmartFlow.DAL.EF
             {
                 await roleManager.CreateAsync(new IdentityRole<int>("Visitor"));
             }
-            if (await roleManager.FindByNameAsync("BusinessPertner") == null)
+            if (await roleManager.FindByNameAsync("BusinessPartner") == null)
             {
-                await roleManager.CreateAsync(new IdentityRole<int>("BusinessPertner"));
+                await roleManager.CreateAsync(new IdentityRole<int>("BusinessPartner"));
             }
         }
     }

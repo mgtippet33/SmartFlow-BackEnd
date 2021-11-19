@@ -10,7 +10,7 @@ namespace SmartFlow.API.Models
         public int EventRatingID { set; get; }
         public double Score { set; get; }
         public DateTime ScoreDate { set; get; }
-        public virtual VisitorModel Visitor { set; get; }
+        public virtual UserModel Visitor { set; get; }
         public virtual EventModel Event { set; get; }
     }
 }

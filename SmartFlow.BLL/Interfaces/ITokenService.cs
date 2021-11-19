@@ -9,8 +9,9 @@ namespace SmartFlow.BLL.Interfaces
 {
     public interface ITokenService
     {
-        string BuildToken(string key, string issuer, UserDTO user);
-        bool IsTokenValid(string key, string issuer, string audience, string token);
+        string GenerateToken(int userID, string role);
+        bool ValidateCurrentToken(string token);
+        string GetClaim(string token, string claimType);
     }
 
 }

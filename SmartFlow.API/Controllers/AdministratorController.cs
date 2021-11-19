@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,19 +28,17 @@ namespace SmartFlow.API.Controllers
         UserManager<User> userManager;
         RoleManager<IdentityRole<int>> roleManager;
         private readonly ITokenService tokenService;
-        private readonly IConfiguration config;
 
         public AdministratorController(IUserService service,
             SignInManager<User> signInManager, UserManager<User> userManager,
             RoleManager<IdentityRole<int>> roleManager,
-            ITokenService tokenService, IConfiguration config)
+            ITokenService tokenService)
         {
             this.service = service;
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.tokenService = tokenService;
-            this.config = config;
 
             mapper = new MapperConfiguration(
                 cfg =>
@@ -53,6 +52,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // GET: api/<AdministratorController>
+        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public ActionResult<IEnumerable<UserModel>> Get()
         {
@@ -70,6 +70,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // GET api/<AdministratorController>/5
+        [Authorize(Roles = "Administrator")]
         [HttpGet("{id}")]
         public ActionResult<UserModel> Get(int id)
         {
@@ -90,133 +91,8 @@ namespace SmartFlow.API.Controllers
             }
         }
 
-        // POST api/<AdministratorController>
-        //[AllowAnonymous]
-        //[Route("signIn")]
-        //[HttpPost]
-        //public async Task<ActionResult<UserModel>> SignIn(UserModel administrator)
-        //{
-        //    try
-        //    {
-        //        //if (string.IsNullOrEmpty(administrator.Email) ||
-        //        //    string.IsNullOrEmpty(administrator.Password))
-        //        //{
-        //        //    return NotFound();
-        //        //}
-
-        //        //IActionResult response = Unauthorized();
-        //        //var result = signInManager.PasswordSignInAsync(
-        //        //    administrator.Email, administrator.Password,
-        //        //    false, lockoutOnFailure: false);
-
-        //        //if (result.Status == TaskStatus.RanToCompletion)
-        //        //{
-        //        //    var generatedToken = tokenService.BuildToken(config["Jwt:Key"].ToString(),
-        //        //        config["Jwt:Issuer"].ToString(), );
-
-        //        //    if (generatedToken != null)
-        //        //    {
-        //        //        HttpContext.Session.SetString("Token", generatedToken);
-        //        //        return RedirectToAction("MainWindow");
-        //        //    }
-        //        //    else
-        //        //    {
-        //        //        return (RedirectToAction("Error"));
-        //        //    }
-        //        //}
-
-
-
-
-
-        //        //var signInResult =
-        //        //    await signInManager.PasswordSignInAsync(administrator.Email, administrator.Password, true, false);
-
-        //        //if (signInResult.Succeeded)
-        //        //{
-        //        //    //var now = DateTime.UtcNow;
-        //        //    //var jwt = new JwtSecurityToken(
-        //        //    //        issuer: AuthOptions.ISSUER,
-        //        //    //        audience: AuthOptions.AUDIENCE,
-        //        //    //        notBefore: now,
-        //        //    //        expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
-        //        //    //        signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-        //        //    //var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-        //        //    //var response = new
-        //        //    //{
-        //        //    //    success = true,
-        //        //    //    status_code = 200,
-        //        //    //    message = "User logged in successfully",
-        //        //    //    access_token = encodedJwt
-        //        //    //};
-
-        //        //    //return Ok(response);
-        //        //}
-        //        //else
-        //        //{
-        //        //    var response = new
-        //        //    {
-        //        //        success = false,
-        //        //        status_code = 404,
-        //        //        message = "User is not found",
-        //        //        access_token = string.Empty
-        //        //    };
-        //        //    return NotFound(response);
-        //        //}
-
-
-        //        //var identity = GetIdentity(administrator.Name, password);
-        //        //if (identity == null)
-        //        //{
-        //        //    return BadRequest(new { errorText = "Invalid username or password." });
-        //        //}
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex);
-        //    }
-        //}
-
-        [Route("signUp")]
-        [HttpPost]
-        public async Task<ActionResult<UserModel>> SignUp(UserModel administrator)
-        {
-            try
-            {
-                if (administrator == null)
-                {
-                    return BadRequest();
-                }
-                var user = mapper.Map<UserModel, User>(administrator);
-                user.UserName = administrator.Name;
-                var managerResult = await userManager.CreateAsync(user,
-                    administrator.Password);
-
-                var userRoles = from role in roleManager.Roles.ToList()
-                                where role.Name == "Administrator"
-                                select role.Name;
-                var roleResult = await userManager.AddToRolesAsync(user, userRoles);
-
-                if(!managerResult.Succeeded && !roleResult.Succeeded)
-                {
-                    return BadRequest();
-                }
-                return Created("", administrator);
-                //var administratorDTO = mapper.Map<UserModel,
-                //    UserDTO>(administrator);
-                //service.AddUser(administratorDTO);
-                //var response = new TokenResponseModel { }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
-
         // PUT api/<AdministratorController>/5
+        [Authorize(Roles = "Administrator")]
         [HttpPut("{id}")]
         public ActionResult Put(int id, [FromBody] UserModel model)
         {
@@ -239,6 +115,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // DELETE api/<AdministratorController>/5
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {

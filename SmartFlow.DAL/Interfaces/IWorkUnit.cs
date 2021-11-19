@@ -10,9 +10,6 @@ namespace SmartFlow.DAL.Interfaces
     public interface IWorkUnit
     {
         IRepository<User> Users { get; }
-        //IRepository<Administrator> Administrators { get; }
-        //IRepository<Visitor> Visitors { get; }
-        //IRepository<BusinessPartner> BusinessPartners { get; }
         IRepository<Event> Events { get; }
         IRepository<Location> Locations { get; }
         IRepository<Item> Items { get; }

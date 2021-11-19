@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SmartFlow.API
@@ -40,14 +41,9 @@ namespace SmartFlow.API
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<SmartFlowContext>(options => 
+            services.AddDbContext<SmartFlowContext>(options =>
                 options.UseNpgsql(connection));
             services.AddTransient<IWorkUnit, EFWorkUnit>();
-            //services.AddTransient<IAdministratorService,
-            //    AdministratorService>();
-            //services.AddTransient<IBusinessPartnerService,
-            //    BusinessPartnerService>();
-            //services.AddTransient<IVisitorService, VisitorService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IEventService, EventService>();
@@ -56,6 +52,10 @@ namespace SmartFlow.API
             services.AddTransient<IEventRatingService, EventRatingService>();
             services.AddTransient<IHistoryLocationService,
                 HistoryLocationService>();
+
+            //services.AddControllers().AddJsonOptions(options =>
+            //    options.JsonSerializerOptions.ReferenceHandler =
+            //    ReferenceHandler.Preserve);
 
             services.AddIdentity<User, IdentityRole<int>>(options =>
             {
@@ -69,19 +69,25 @@ namespace SmartFlow.API
             }).AddRoles<IdentityRole<int>>()
             .AddEntityFrameworkStores<SmartFlowContext>();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            services.AddAuthentication(x =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                };
-            });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["JWT:Issuer"],
+                        ValidAudience = Configuration["JWT:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                    };
+                });
 
             services.AddDistributedMemoryCache();
 
@@ -112,6 +118,11 @@ namespace SmartFlow.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(options => options
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
             app.UseAuthentication();
             app.UseAuthorization();

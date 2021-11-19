@@ -13,6 +13,6 @@ namespace SmartFlow.API.Models
         public string Action { set; get; }
         public DateTime ActionTime { set; get; }
         public virtual LocationModel Location { set; get; }
-        public virtual VisitorModel Visitor { set; get; }
+        public virtual UserModel Visitor { set; get; }
     }
 }

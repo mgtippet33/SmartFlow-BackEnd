@@ -1,6 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using SmartFlow.BLL.DTO;
 using SmartFlow.BLL.Interfaces;
+using SmartFlow.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,41 +16,58 @@ namespace SmartFlow.BLL.Services
 {
     public class TokenService : ITokenService
     {
-        private const double EXPIRY_DURATION_MINUTES = 30;
+        private string secretKey;
+        private string issuer;
+        private string audience;
 
-        public string BuildToken(string key, string issuer, UserDTO user)
+        public TokenService(IConfiguration configuration)
         {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim(ClaimTypes.NameIdentifier,
-                Guid.NewGuid().ToString())
-            };
-
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
-            var tokenDescriptor = new JwtSecurityToken(issuer, issuer, claims,
-                expires: DateTime.Now.AddMinutes(EXPIRY_DURATION_MINUTES), signingCredentials: credentials);
-            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+            var jwtParametrs = configuration.GetSection("JWT");
+            this.secretKey = jwtParametrs["Key"];
+            this.issuer = jwtParametrs["Issuer"];
+            this.audience = jwtParametrs["Audience"];
         }
 
-        public bool IsTokenValid(string key, string issuer, string audience, string token)
+        public string GenerateToken(int userID, string role)
         {
-            var mySecret = Encoding.UTF8.GetBytes(key);
-            var mySecurityKey = new SymmetricSecurityKey(mySecret);
+            var mySecurityKey =
+                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userID.ToString()),
+                    new Claim(ClaimTypes.Role, role)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = new SigningCredentials(mySecurityKey,
+                SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public bool ValidateCurrentToken(string token)
+        {
+            var mySecurityKey =
+                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+
             var tokenHandler = new JwtSecurityTokenHandler();
             try
             {
-                tokenHandler.ValidateToken(token,
-                new TokenValidationParameters
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidIssuer = issuer,
                     ValidAudience = audience,
-                    IssuerSigningKey = mySecurityKey,
+                    IssuerSigningKey = mySecurityKey
                 }, out SecurityToken validatedToken);
             }
             catch
@@ -55,6 +75,15 @@ namespace SmartFlow.BLL.Services
                 return false;
             }
             return true;
+        }
+
+        public string GetClaim(string token, string claimType)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+            var stringClaimValue = securityToken.Claims.First(claim => claim.Type == claimType).Value;
+            return stringClaimValue;
         }
     }
 
