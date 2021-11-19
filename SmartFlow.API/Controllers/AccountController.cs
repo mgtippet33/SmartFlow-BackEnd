@@ -15,18 +15,15 @@ namespace SmartFlow.API.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private IUserService service;
         private IMapper mapper;
         UserManager<User> userManager;
         RoleManager<IdentityRole<int>> roleManager;
         private readonly ITokenService tokenService;
 
-        public AccountController(IUserService service,
-            UserManager<User> userManager,
+        public AccountController(UserManager<User> userManager,
             RoleManager<IdentityRole<int>> roleManager,
             ITokenService tokenService)
         {
-            this.service = service;
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.tokenService = tokenService;
@@ -60,8 +57,7 @@ namespace SmartFlow.API.Controllers
                 var response = new
                 {
                     token = token,
-                    message = "User logged in successfully.",
-                    role = userRole
+                    message = "User logged in successfully."
                 };
                 return Ok(response);
             }

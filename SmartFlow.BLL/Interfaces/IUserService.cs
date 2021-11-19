@@ -10,8 +10,8 @@ namespace SmartFlow.BLL.Interfaces
     public interface IUserService
     {
         IEnumerable<UserDTO> GetAllUsers();
+        IEnumerable<UserDTO> GetUsersOfOneRole(string role);
         UserDTO GetUser(int id);
-        int AddUser(UserDTO visitorDTO);
         void DeleteUser(int id);
         void UpdateUser(UserDTO visitorDTO);
     }

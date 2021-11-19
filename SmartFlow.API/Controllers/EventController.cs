@@ -1,27 +1,34 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using SmartFlow.API.Models;
 using SmartFlow.BLL.DTO;
 using SmartFlow.BLL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SmartFlow.API.Controllers
 {
-    [Route("api/[controller]")]
+//    [Authorize(Roles = "BusinessPartner")]
+    [Route("api/event")]
     [ApiController]
     public class EventController : ControllerBase
     {
-        private IEventService service;
+        private IEventService eventService;
+        private ITokenService tokenService;
         private IMapper mapper;
 
-        public EventController(IEventService service)
+        public EventController(IEventService eventService,
+            ITokenService tokenService)
         {
-            this.service = service;
+            this.eventService = eventService;
+            this.tokenService = tokenService;
 
             mapper = new MapperConfiguration(
                 cfg =>
@@ -33,13 +40,14 @@ namespace SmartFlow.API.Controllers
                 })
                 .CreateMapper();
         }
+
         // GET: api/<EventController>
         [HttpGet]
         public ActionResult<IEnumerable<EventModel>> Get()
         {
             try
             {
-                var eventsDTO = service.GetAllEvents();
+                var eventsDTO = eventService.GetAllEvents();
                 var events = mapper.Map<IEnumerable<EventDTO>,
                     List<EventModel>>(eventsDTO);
                 return Ok(events);
@@ -56,7 +64,7 @@ namespace SmartFlow.API.Controllers
         {
             try
             {
-                var eventDTO = service.GetEvent(id);
+                var eventDTO = eventService.GetEvent(id);
                 if (eventDTO == null)
                 {
                     return NotFound();
@@ -72,13 +80,20 @@ namespace SmartFlow.API.Controllers
         }
 
         // POST api/<EventController>
+        [Authorize]
         [HttpPost]
-        public void Post([FromBody] EventModel value)
+        public ActionResult<EventModel> Post([FromBody] EventModel model)
         {
-            //try
-            //{
-
-            //}
+            try
+            {
+                var user = HttpContext.User;
+                var id = user.Identity!.Name;
+                return Ok(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         // PUT api/<EventController>/5

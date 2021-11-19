@@ -30,17 +30,22 @@ namespace SmartFlow.BLL.Services
 
         public string GenerateToken(int userID, string role)
         {
+
             var mySecurityKey =
                 new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
 
+            var claims = new List<Claim>
+            {
+                new(ClaimsIdentity.DefaultNameClaimType, userID.ToString()),
+                new(ClaimTypes.Role, role),
+            };
+            //claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, userID.ToString()),
-                    new Claim(ClaimTypes.Role, role)
-                }),
+                Subject = new ClaimsIdentity(claims, "Token",
+                    ClaimsIdentity.DefaultNameClaimType,
+                    ClaimsIdentity.DefaultRoleClaimType),
                 Expires = DateTime.UtcNow.AddDays(7),
                 Issuer = issuer,
                 Audience = audience,

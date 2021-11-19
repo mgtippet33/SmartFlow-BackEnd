@@ -24,21 +24,10 @@ namespace SmartFlow.API.Controllers
     {
         private IUserService service;
         private IMapper mapper;
-        SignInManager<User> signInManager;
-        UserManager<User> userManager;
-        RoleManager<IdentityRole<int>> roleManager;
-        private readonly ITokenService tokenService;
 
-        public AdministratorController(IUserService service,
-            SignInManager<User> signInManager, UserManager<User> userManager,
-            RoleManager<IdentityRole<int>> roleManager,
-            ITokenService tokenService)
+        public AdministratorController(IUserService service)
         {
             this.service = service;
-            this.signInManager = signInManager;
-            this.userManager = userManager;
-            this.roleManager = roleManager;
-            this.tokenService = tokenService;
 
             mapper = new MapperConfiguration(
                 cfg =>
@@ -53,15 +42,46 @@ namespace SmartFlow.API.Controllers
 
         // GET: api/<AdministratorController>
         [Authorize(Roles = "Administrator")]
+        [HttpGet("{role}")]
+        public ActionResult<IEnumerable<UserModel>> Get(string role)
+        {
+            try
+            {
+                switch (role)
+                {
+                    case "visitor":
+                        role = "Visitor";
+                        break;
+                    case "businessPartner":
+                        role = "BusinessPartner";
+                        break;
+                    default:
+                        role = "Administrator";
+                        break;
+                }
+
+                var usersDTO = service.GetUsersOfOneRole(role);
+                var users = mapper.Map<IEnumerable<UserDTO>,
+                    List<UserModel>>(usersDTO);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        // GET: api/<AdministratorController>
+        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public ActionResult<IEnumerable<UserModel>> Get()
         {
             try
             {
-                var administratorsDTO = service.GetAllUsers();
-                var administrators = mapper.Map<IEnumerable<UserDTO>,
-                    List<UserModel>>(administratorsDTO);
-                return Ok(administrators);
+                var usersDTO = service.GetAllUsers();
+                var users = mapper.Map<IEnumerable<UserDTO>,
+                    List<UserModel>>(usersDTO);
+                return Ok(users);
             }
             catch (Exception ex)
             {
@@ -71,19 +91,18 @@ namespace SmartFlow.API.Controllers
 
         // GET api/<AdministratorController>/5
         [Authorize(Roles = "Administrator")]
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public ActionResult<UserModel> Get(int id)
         {
             try
             {
-                var administratorDTO = service.GetUser(id);
-                if (administratorDTO == null)
+                var userDTO = service.GetUser(id);
+                if (userDTO == null)
                 {
                     return NotFound();
                 }
-                var administrator = mapper.Map<UserDTO,
-                    UserModel>(administratorDTO);
-                return Ok(administrator);
+                var user = mapper.Map<UserDTO, UserModel>(userDTO);
+                return Ok(user);
             }
             catch (Exception ex)
             {
@@ -98,15 +117,15 @@ namespace SmartFlow.API.Controllers
         {
             try
             {
-                var administrator = service.GetUser(id);
-                if (administrator != null)
+                var user = service.GetUser(id);
+                if (user != null)
                 {
-                    var administratorDTO = mapper.Map<UserModel, UserDTO>(model);
-                    administratorDTO.UserID = id;
-                    service.UpdateUser(administratorDTO);
-                    return Ok();
+                    var userDTO = mapper.Map<UserModel, UserDTO>(model);
+                    userDTO.UserID = id;
+                    service.UpdateUser(userDTO);
+                    return Ok("Changes made successfully.");
                 }
-                return NotFound();
+                return NotFound("This user does not exist.");
             }
             catch(Exception ex)
             {
@@ -121,11 +140,11 @@ namespace SmartFlow.API.Controllers
         {
             try
             {
-                var administrator = service.GetUser(id);
-                if (administrator != null)
+                var user = service.GetUser(id);
+                if (user != null)
                 {
                     service.DeleteUser(id);
-                    return Ok();
+                    return Ok("User deleted successfully.");
                 }
                 return NotFound();
             }

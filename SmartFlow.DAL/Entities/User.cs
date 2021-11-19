@@ -15,5 +15,6 @@ namespace SmartFlow.DAL.Entities
         [Key]
         public int UserID { set; get; }
         public string Name { set; get; }
+        public string Role { set; get; }
     }
 }

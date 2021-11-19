@@ -7,26 +7,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartFlow.BLL.Services
 {
     public class UserService : IUserService
     {
-        private IMapper toDTOMapper;
-        private IMapper fromDTOMapper;
+        private IMapper mapper;
         private IWorkUnit database;
 
         public UserService(IWorkUnit database)
         {
             this.database = database;
 
-            toDTOMapper = new MapperConfiguration(
-                cfg => cfg.CreateMap<User, UserDTO>()
-                .ReverseMap()).CreateMapper();
-            fromDTOMapper = new MapperConfiguration(
-                cfg => cfg.CreateMap<UserDTO, User>()
-                .ReverseMap()).CreateMapper();
+            mapper = new MapperConfiguration(
+                cfg =>
+                {
+                    cfg.CreateMap<User, UserDTO>().ReverseMap();
+                    cfg.CreateMap<UserDTO, User>().ReverseMap();
+                }).CreateMapper();
         }
 
         public UserDTO GetUser(int id)
@@ -34,8 +32,7 @@ namespace SmartFlow.BLL.Services
             var user = database.Users.Get(id);
             if (user == null)
                 throw new ArgumentNullException();
-            var userDTO = toDTOMapper
-                .Map<User, UserDTO>(user);
+            var userDTO = mapper.Map<User, UserDTO>(user);
 
             return userDTO;
         }
@@ -43,17 +40,20 @@ namespace SmartFlow.BLL.Services
         public IEnumerable<UserDTO> GetAllUsers()
         {
             var users = database.Users.GetAll();
-            var usersDTO = toDTOMapper.Map<IEnumerable<User>,
+            var usersDTO = mapper.Map<IEnumerable<User>,
                 List<UserDTO>>(users);
 
             return usersDTO;
         }
 
-        public int AddUser(UserDTO userDTO)
+        public IEnumerable<UserDTO> GetUsersOfOneRole(string role)
         {
-            var user = fromDTOMapper.Map<UserDTO, User>(userDTO);
-            var userID = database.Users.Create(user);
-            return userID;
+            var users = database.Users.GetAll();
+            users = users.Where(user => user.Role == role).ToList();
+            var usersDTO = mapper.Map<IEnumerable<User>,
+                List<UserDTO>>(users);
+
+            return usersDTO;
         }
 
         public void DeleteUser(int id)
@@ -78,7 +78,7 @@ namespace SmartFlow.BLL.Services
             if (userExsist)
                 throw new NullReferenceException();
 
-            user = fromDTOMapper.Map<UserDTO, User>(userDTO);
+            user = mapper.Map<UserDTO, User>(userDTO);
             database.Users.Update(user);
             database.Save();
         }

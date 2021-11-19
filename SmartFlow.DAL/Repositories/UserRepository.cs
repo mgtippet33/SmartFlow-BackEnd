@@ -55,6 +55,7 @@ namespace SmartFlow.DAL.Repositories
                 toUpdateUser.Name = user.Name ?? toUpdateUser.Name;
                 toUpdateUser.Email = user.Email ?? toUpdateUser.Email;
                 toUpdateUser.PasswordHash = user.PasswordHash ?? toUpdateUser.PasswordHash;
+                toUpdateUser.Role = user.Role ?? toUpdateUser.Role;
             }
         }
     }
