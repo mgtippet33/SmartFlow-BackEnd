@@ -19,7 +19,7 @@ namespace SmartFlow.DAL.Entities
         public DateTime ScoreDate { set; get; }
 
         [ForeignKey("VisitorID")]
-        public virtual Visitor Visitor { set; get; }
+        public virtual User Visitor { set; get; }
 
 
         [ForeignKey("EventID")]

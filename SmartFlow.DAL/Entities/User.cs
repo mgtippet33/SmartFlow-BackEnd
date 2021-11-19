@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.DAL.Entities
 {
-    [Table("administrator")]
-    public class Administrator : IdentityUser<int>
+    [Table("user")]
+    public class User : IdentityUser<int>
     {
         [Key]
-        public int AdministratorID { set; get; }
+        public int UserID { set; get; }
         public string Name { set; get; }
     }
 }

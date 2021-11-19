@@ -37,8 +37,8 @@ namespace SmartFlow.DAL.Repositories
 
         public int Create(HistoryLocation history)
         {
-            history.Visitor = database.visitors
-                .Find(history.Visitor.VisitorID);
+            history.Visitor = database.users
+                .Find(history.Visitor.UserID);
             history.Location = database.locations
                 .Find(history.Location.LocationID);
             database.historyLocations.Add(history);
@@ -64,8 +64,8 @@ namespace SmartFlow.DAL.Repositories
             if (toUpdateHistory != null)
             {
                 toUpdateHistory.HistoryLocationID = history.HistoryLocationID;
-                toUpdateHistory.Visitor = database.visitors
-                    .Find(history.Visitor.VisitorID);
+                toUpdateHistory.Visitor = database.users
+                    .Find(history.Visitor.UserID);
                 toUpdateHistory.Location = database.locations
                     .Find(history.Location.LocationID);
                 toUpdateHistory.Action = history.Action ?? toUpdateHistory.Action;

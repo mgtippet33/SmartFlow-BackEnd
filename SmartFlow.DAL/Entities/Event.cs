@@ -21,7 +21,7 @@ namespace SmartFlow.DAL.Entities
         public TimeSpan CloseTime { set; get; }
 
         [ForeignKey("BusinessPartnerID")]
-        public virtual BusinessPartner BusinessPartner { set; get; }
+        public virtual User BusinessPartner { set; get; }
 
     }
 }

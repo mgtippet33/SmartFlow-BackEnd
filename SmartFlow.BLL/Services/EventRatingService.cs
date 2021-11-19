@@ -25,7 +25,7 @@ namespace SmartFlow.BLL.Services
                 cfg =>
                 {
                     cfg.CreateMap<EventRating, EventRatingDTO>().ReverseMap();
-                    cfg.CreateMap<Visitor, VisitorDTO>().ReverseMap();
+                    cfg.CreateMap<User, UserDTO>().ReverseMap();
                     cfg.CreateMap<Event, EventDTO>().ReverseMap();
                 }
                 ).CreateMapper();
@@ -34,7 +34,7 @@ namespace SmartFlow.BLL.Services
                 cfg =>
                 {
                     cfg.CreateMap<EventRatingDTO, EventRating>().ReverseMap();
-                    cfg.CreateMap<VisitorDTO, Visitor>().ReverseMap();
+                    cfg.CreateMap<UserDTO, User>().ReverseMap();
                     cfg.CreateMap<EventDTO, Event>().ReverseMap();
                 }
                 ).CreateMapper();
@@ -67,7 +67,7 @@ namespace SmartFlow.BLL.Services
                 throw new ArgumentNullException();
             var ratingExsist = database.EventRatings.GetAll()
                 .Any(rate => rate.Event.EventID == ratingDTO.Event.EventID &&
-                    rate.Visitor.VisitorID == ratingDTO.Visitor.VisitorID);
+                    rate.Visitor.UserID == ratingDTO.Visitor.UserID);
             if (ratingExsist)
                 throw new ArgumentException();
 
@@ -93,7 +93,7 @@ namespace SmartFlow.BLL.Services
                 throw new NullReferenceException();
             var ratingExsist = database.EventRatings.GetAll()
                 .Any(rate => rate.Event.EventID == ratingDTO.Event.EventID &&
-                    rate.Visitor.VisitorID == ratingDTO.Visitor.VisitorID);
+                    rate.Visitor.UserID == ratingDTO.Visitor.UserID);
             if (ratingExsist)
                 throw new NullReferenceException();
 

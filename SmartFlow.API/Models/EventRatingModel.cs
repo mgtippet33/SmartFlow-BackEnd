@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartFlow.BLL.DTO
+namespace SmartFlow.API.Models
 {
-    public class EventRatingDTO
+    public class EventRatingModel
     {
         public int EventRatingID { set; get; }
         public double Score { set; get; }
         public DateTime ScoreDate { set; get; }
-        public virtual UserDTO Visitor { set; get; }
-        public virtual EventDTO Event { set; get; }
+        public virtual VisitorModel Visitor { set; get; }
+        public virtual EventModel Event { set; get; }
     }
 }

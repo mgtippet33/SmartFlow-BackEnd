@@ -22,6 +22,6 @@ namespace SmartFlow.DAL.Entities
         public virtual Location Location { set; get; }
 
         [ForeignKey("VisitorID")]
-        public virtual Visitor Visitor { set; get; }
+        public virtual User Visitor { set; get; }
     }
 }

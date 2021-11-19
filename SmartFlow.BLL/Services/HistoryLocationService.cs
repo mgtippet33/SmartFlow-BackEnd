@@ -25,7 +25,7 @@ namespace SmartFlow.BLL.Services
                 cfg =>
                 {
                     cfg.CreateMap<HistoryLocation, HistoryLocationDTO>().ReverseMap();
-                    cfg.CreateMap<Visitor, VisitorDTO>().ReverseMap();
+                    cfg.CreateMap<User, UserDTO>().ReverseMap();
                     cfg.CreateMap<Location, LocationDTO>().ReverseMap();
                 }
                 ).CreateMapper();
@@ -34,7 +34,7 @@ namespace SmartFlow.BLL.Services
                 cfg =>
                 {
                     cfg.CreateMap<HistoryLocationDTO, HistoryLocation>().ReverseMap();
-                    cfg.CreateMap<VisitorDTO, Visitor>().ReverseMap();
+                    cfg.CreateMap<UserDTO, User>().ReverseMap();
                     cfg.CreateMap<LocationDTO, Location>().ReverseMap();
                 }
                 ).CreateMapper();
@@ -93,7 +93,7 @@ namespace SmartFlow.BLL.Services
                 throw new NullReferenceException();
             var historyExsist = database.HistoryLocations.GetAll()
                 .Any(hist => hist.Location.LocationID == historyDTO.Location.LocationID &&
-                    hist.Visitor.VisitorID == historyDTO.Visitor.VisitorID);
+                    hist.Visitor.UserID == historyDTO.Visitor.UserID);
             if (historyExsist)
                 throw new NullReferenceException();
 
