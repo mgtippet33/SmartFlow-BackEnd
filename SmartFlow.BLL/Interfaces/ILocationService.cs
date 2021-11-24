@@ -10,6 +10,7 @@ namespace SmartFlow.BLL.Interfaces
     public interface ILocationService
     {
         IEnumerable<LocationDTO> GetAllLocations();
+        IEnumerable<LocationDTO> GetLocationsByEvent(int eventID);
         LocationDTO GetLocation(int id);
         int AddLocation(LocationDTO locationDTO);
         void DeleteLocation(int id);

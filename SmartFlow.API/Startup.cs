@@ -53,9 +53,7 @@ namespace SmartFlow.API
             services.AddTransient<IHistoryLocationService,
                 HistoryLocationService>();
 
-            //services.AddControllers().AddJsonOptions(options =>
-            //    options.JsonSerializerOptions.ReferenceHandler =
-            //    ReferenceHandler.Preserve);
+            services.AddHttpContextAccessor();
 
             services.AddIdentity<User, IdentityRole<int>>(options =>
             {

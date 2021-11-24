@@ -18,8 +18,8 @@ namespace SmartFlow.DAL.Entities
         public string Description { set; get; }
         public string Image { set; get; }
         public string Coordinates { set; get; }
-        public TimeSpan OpenTime { set; get; }
-        public TimeSpan CloseTime { set; get; }
+        public string OpenTime { set; get; }
+        public string CloseTime { set; get; }
 
         [ForeignKey("BusinessPartnerID")]
         public virtual User BusinessPartner { set; get; }

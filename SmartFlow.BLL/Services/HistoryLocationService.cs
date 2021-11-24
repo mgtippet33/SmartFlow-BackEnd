@@ -13,38 +13,33 @@ namespace SmartFlow.BLL.Services
 {
     public class HistoryLocationService : IHistoryLocationService
     {
-        private IMapper toDTOMapper;
-        private IMapper fromDTOMapper;
+        private IMapper mapper;
         private IWorkUnit database;
 
         public HistoryLocationService(IWorkUnit database)
         {
             this.database = database;
 
-            toDTOMapper = new MapperConfiguration(
+            mapper = new MapperConfiguration(
                 cfg =>
                 {
                     cfg.CreateMap<HistoryLocation, HistoryLocationDTO>().ReverseMap();
                     cfg.CreateMap<User, UserDTO>().ReverseMap();
                     cfg.CreateMap<Location, LocationDTO>().ReverseMap();
-                }
-                ).CreateMapper();
-
-            fromDTOMapper = new MapperConfiguration(
-                cfg =>
-                {
                     cfg.CreateMap<HistoryLocationDTO, HistoryLocation>().ReverseMap();
                     cfg.CreateMap<UserDTO, User>().ReverseMap();
                     cfg.CreateMap<LocationDTO, Location>().ReverseMap();
+                    cfg.CreateMap<Event, EventDTO>().ReverseMap();
+                    cfg.CreateMap<UserDTO, User>().ReverseMap();
                 }
                 ).CreateMapper();
-
         }
 
         public IEnumerable<HistoryLocationDTO> GetAllHistoryLocations()
         {
-            var histories = database.HistoryLocations.GetAll();
-            var historiesDTO = toDTOMapper.Map<IEnumerable<HistoryLocation>,
+            var histories = database.HistoryLocations.GetAll()
+                .OrderBy(history => history.HistoryLocationID);
+            var historiesDTO = mapper.Map<IEnumerable<HistoryLocation>,
                 List<HistoryLocationDTO>>(histories);
 
             return historiesDTO;
@@ -55,7 +50,7 @@ namespace SmartFlow.BLL.Services
             var history = database.HistoryLocations.Get(id);
             if (history == null)
                 throw new NullReferenceException();
-            var historyDTO = toDTOMapper
+            var historyDTO = mapper
                 .Map<HistoryLocation, HistoryLocationDTO>(history);
 
             return historyDTO;
@@ -65,13 +60,14 @@ namespace SmartFlow.BLL.Services
         {
             if (historyDTO.Location == null || historyDTO.Visitor == null)
                 throw new ArgumentNullException();
-            //var historyExsist = database.HistoryLocations.GetAll()
-            //    .Any(hist => hist.Event.EventID == historyDTO.Event.EventID &&
-            //        hist.Visitor.VisitorID == historyDTO.Visitor.VisitorID);
-            //if (historyExsist)
-            //    throw new ArgumentException();
+            var historyExsist = database.HistoryLocations.GetAll()
+                .Any(hist => hist.Location.LocationID ==
+                    historyDTO.Location.LocationID &&
+                    hist.Visitor.UserID == historyDTO.Visitor.UserID);
+            if (historyExsist)
+                throw new ArgumentException();
 
-            var history = fromDTOMapper.Map<HistoryLocationDTO, HistoryLocation>(historyDTO);
+            var history = mapper.Map<HistoryLocationDTO, HistoryLocation>(historyDTO);
             var historyID = database.HistoryLocations.Create(history);
             return historyID;
         }
@@ -97,7 +93,7 @@ namespace SmartFlow.BLL.Services
             if (historyExsist)
                 throw new NullReferenceException();
 
-            history = fromDTOMapper.Map<HistoryLocationDTO, HistoryLocation>(historyDTO);
+            history = mapper.Map<HistoryLocationDTO, HistoryLocation>(historyDTO);
             database.HistoryLocations.Update(history);
             database.Save();
         }

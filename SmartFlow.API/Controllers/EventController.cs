@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using SmartFlow.API.Models;
 using SmartFlow.BLL.DTO;
 using SmartFlow.BLL.Interfaces;
@@ -15,20 +15,20 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.API.Controllers
 {
-//    [Authorize(Roles = "BusinessPartner")]
+    [Authorize(Roles = "Administrator,BusinessPartner")]
     [Route("api/event")]
     [ApiController]
     public class EventController : ControllerBase
     {
         private IEventService eventService;
-        private ITokenService tokenService;
+        private IUserService userService;
         private IMapper mapper;
 
         public EventController(IEventService eventService,
-            ITokenService tokenService)
+            IUserService userService)
         {
             this.eventService = eventService;
-            this.tokenService = tokenService;
+            this.userService = userService;
 
             mapper = new MapperConfiguration(
                 cfg =>
@@ -80,32 +80,96 @@ namespace SmartFlow.API.Controllers
         }
 
         // POST api/<EventController>
-        [Authorize]
         [HttpPost]
         public ActionResult<EventModel> Post([FromBody] EventModel model)
         {
             try
             {
-                var user = HttpContext.User;
-                var id = user.Identity!.Name;
-                return Ok(id);
+
+                var userID = HttpContext.User.Identity!.Name;
+                if (userID == null)
+                {
+                    return BadRequest("The action is available to authorized users.");
+                }
+                if (InvalidEventModel(model))
+                {
+                    return BadRequest("Fill all necessary fields.");
+                }
+
+                var eventDTO = mapper.Map<EventModel, EventDTO>(model);
+                var user = userService.GetUser(Convert.ToInt32(userID));
+                eventDTO.BusinessPartner = user;
+                eventService.AddEvent(eventDTO);
+                return Ok("Event added successfully.");
             }
-            catch (Exception ex)
+            catch (ArgumentException)
+            {
+                return BadRequest("An event with the same name already exists.");
+            }
+            catch (Exception)
             {
                 return BadRequest();
             }
         }
 
+        private bool InvalidEventModel(EventModel model)
+        {
+            if (model == null || model.Name == null ||
+                model.Description == null || model.Coordinates == null)
+            {
+                return true;
+            }
+            return false;
+        }
+
         // PUT api/<EventController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public ActionResult<EventModel> Put(int id, [FromBody] EventModel model)
         {
+            try
+            {
+                if (model == null)
+                {
+                    return BadRequest("Specify the data you want to change");
+                }
+
+                var modelID = HttpContext.User.Identity!.Name;
+                if (modelID == null)
+                {
+                    return BadRequest("The action is available to authorized users.");
+                }
+
+                model.EventID = id;
+                var eventDTO = mapper.Map<EventModel, EventDTO>(model);
+                var user = userService.GetUser(Convert.ToInt32(modelID));
+                eventDTO.BusinessPartner = user;
+                eventService.UpdateEvent(eventDTO);
+                return Ok("Event updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         // DELETE api/<EventController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult<EventModel> Delete(int id)
         {
+            try
+            {
+                var eventModel = eventService.GetEvent(id);
+                if (eventModel != null)
+                {
+                    eventService.DeleteEvent(id);
+                    return Ok("Event deleted successfully.");
+                }
+                return NotFound("This event does not exist.");
+            }
+            catch (Exception)
+            {
+                return BadRequest("This event does not exist.");
+            }
         }
     }
 }

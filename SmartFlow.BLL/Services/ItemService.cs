@@ -13,36 +13,46 @@ namespace SmartFlow.BLL.Services
 {
     public class ItemService : IItemService
     {
-        private IMapper toDTOMapper;
-        private IMapper fromDTOMapper;
+        private IMapper mapper;
         private IWorkUnit database;
 
         public ItemService(IWorkUnit database)
         {
             this.database = database;
 
-            toDTOMapper = new MapperConfiguration(
+            mapper = new MapperConfiguration(
                 cfg =>
                 {
                     cfg.CreateMap<Item, ItemDTO>().ReverseMap();
-                    cfg.CreateMap<Location, LocationDTO>().ReverseMap();
-                }
-                ).CreateMapper();
-
-            fromDTOMapper = new MapperConfiguration(
-                cfg =>
-                {
                     cfg.CreateMap<ItemDTO, Item>().ReverseMap();
+                    cfg.CreateMap<Location, LocationDTO>().ReverseMap();
                     cfg.CreateMap<LocationDTO, Location>().ReverseMap();
+                    cfg.CreateMap<Event, EventDTO>().ReverseMap();
+                    cfg.CreateMap<EventDTO, Event>().ReverseMap();
+                    cfg.CreateMap<User, UserDTO>().ReverseMap();
+                    cfg.CreateMap<UserDTO, User>().ReverseMap();
                 }
                 ).CreateMapper();
-
         }
 
         public IEnumerable<ItemDTO> GetAllItems()
         {
+            var items = database.Items.GetAll()
+                .OrderBy(item => item.ItemID);
+            var itemsDTO = mapper.Map<IEnumerable<Item>,
+                List<ItemDTO>>(items);
+
+            return itemsDTO;
+        }
+
+        public IEnumerable<ItemDTO> GetItemsByLocation(int locationID)
+        {
             var items = database.Items.GetAll();
-            var itemsDTO = toDTOMapper.Map<IEnumerable<Item>,
+            items = items.Where(item =>
+                item.Location.LocationID == locationID)
+                .OrderBy(item => item.ItemID)
+                .ToList();
+            var itemsDTO = mapper.Map<IEnumerable<Item>,
                 List<ItemDTO>>(items);
 
             return itemsDTO;
@@ -53,7 +63,7 @@ namespace SmartFlow.BLL.Services
             var item = database.Items.Get(id);
             if (item == null)
                 throw new NullReferenceException();
-            var itemDTO = toDTOMapper
+            var itemDTO = mapper
                 .Map<Item, ItemDTO>(item);
 
             return itemDTO;
@@ -69,7 +79,7 @@ namespace SmartFlow.BLL.Services
             if (itemExsist)
                 throw new ArgumentException();
 
-            var item = fromDTOMapper.Map<ItemDTO, Item>(itemDTO);
+            var item = mapper.Map<ItemDTO, Item>(itemDTO);
             var itemID = database.Items.Create(item);
             return itemID;
         }
@@ -96,7 +106,7 @@ namespace SmartFlow.BLL.Services
             if (itemExsist)
                 throw new NullReferenceException();
 
-            item = fromDTOMapper.Map<ItemDTO, Item>(itemDTO);
+            item = mapper.Map<ItemDTO, Item>(itemDTO);
             database.Items.Update(item);
             database.Save();
         }

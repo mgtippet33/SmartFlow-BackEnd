@@ -9,6 +9,8 @@ namespace SmartFlow.BLL.DTO
     public class EventRatingDTO
     {
         public int EventRatingID { set; get; }
+        public int VisitorID { set; get; }
+        public int EventID { set; get; }
         public double Score { set; get; }
         public DateTime ScoreDate { set; get; }
         public virtual UserDTO Visitor { set; get; }

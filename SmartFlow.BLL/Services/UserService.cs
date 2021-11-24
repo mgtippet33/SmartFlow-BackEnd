@@ -39,7 +39,8 @@ namespace SmartFlow.BLL.Services
 
         public IEnumerable<UserDTO> GetAllUsers()
         {
-            var users = database.Users.GetAll();
+            var users = database.Users.GetAll()
+                .OrderBy(user => user.UserID);
             var usersDTO = mapper.Map<IEnumerable<User>,
                 List<UserDTO>>(users);
 
@@ -49,7 +50,9 @@ namespace SmartFlow.BLL.Services
         public IEnumerable<UserDTO> GetUsersOfOneRole(string role)
         {
             var users = database.Users.GetAll();
-            users = users.Where(user => user.Role == role).ToList();
+            users = users.Where(user => user.Role == role)
+                .OrderBy(user => user.UserID)
+                .ToList();
             var usersDTO = mapper.Map<IEnumerable<User>,
                 List<UserDTO>>(users);
 

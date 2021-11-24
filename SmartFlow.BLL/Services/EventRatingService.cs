@@ -13,41 +13,50 @@ namespace SmartFlow.BLL.Services
 {
     public class EventRatingService : IEventRatingService
     {
-        private IMapper toDTOMapper;
-        private IMapper fromDTOMapper;
+        private IMapper mapper;
         private IWorkUnit database;
 
         public EventRatingService(IWorkUnit database)
         {
             this.database = database;
 
-            toDTOMapper = new MapperConfiguration(
+            mapper = new MapperConfiguration(
                 cfg =>
                 {
                     cfg.CreateMap<EventRating, EventRatingDTO>().ReverseMap();
                     cfg.CreateMap<User, UserDTO>().ReverseMap();
                     cfg.CreateMap<Event, EventDTO>().ReverseMap();
-                }
-                ).CreateMapper();
-
-            fromDTOMapper = new MapperConfiguration(
-                cfg =>
-                {
                     cfg.CreateMap<EventRatingDTO, EventRating>().ReverseMap();
                     cfg.CreateMap<UserDTO, User>().ReverseMap();
                     cfg.CreateMap<EventDTO, Event>().ReverseMap();
                 }
                 ).CreateMapper();
-
         }
 
         public IEnumerable<EventRatingDTO> GetAllEventRatings()
         {
-            var ratings = database.EventRatings.GetAll();
-            var ratingsDTO = toDTOMapper.Map<IEnumerable<EventRating>,
+            var ratings = database.EventRatings.GetAll()
+                .OrderBy(rating => rating.EventRatingID);
+            var ratingsDTO = mapper.Map<IEnumerable<EventRating>,
                 List<EventRatingDTO>>(ratings);
 
             return ratingsDTO;
+        }
+
+        public EventRatingDTO GetRatingByEvent(int eventID)
+        {
+            var ratings = database.EventRatings.GetAll();
+            var averageRating = ratings.Where(rating =>
+                rating.Event.EventID == eventID).Average(rating => rating.Score);
+
+            var currentEvent = database.Events.Get(eventID);
+            var ratingDTO = new EventRatingDTO()
+            {
+                Event = mapper.Map<Event, EventDTO>(currentEvent),
+                Score = averageRating
+            };
+
+            return ratingDTO;
         }
 
         public EventRatingDTO GetEventRating(int id)
@@ -55,7 +64,7 @@ namespace SmartFlow.BLL.Services
             var rating = database.EventRatings.Get(id);
             if (rating == null)
                 throw new NullReferenceException();
-            var ratingDTO = toDTOMapper
+            var ratingDTO = mapper
                 .Map<EventRating, EventRatingDTO>(rating);
 
             return ratingDTO;
@@ -71,7 +80,7 @@ namespace SmartFlow.BLL.Services
             if (ratingExsist)
                 throw new ArgumentException();
 
-            var rating = fromDTOMapper.Map<EventRatingDTO, EventRating>(ratingDTO);
+            var rating = mapper.Map<EventRatingDTO, EventRating>(ratingDTO);
             var ratingID = database.EventRatings.Create(rating);
             return ratingID;
         }
@@ -91,13 +100,8 @@ namespace SmartFlow.BLL.Services
             var rating = database.EventRatings.Get(ratingDTO.EventRatingID);
             if (rating == null)
                 throw new NullReferenceException();
-            var ratingExsist = database.EventRatings.GetAll()
-                .Any(rate => rate.Event.EventID == ratingDTO.Event.EventID &&
-                    rate.Visitor.UserID == ratingDTO.Visitor.UserID);
-            if (ratingExsist)
-                throw new NullReferenceException();
 
-            rating = fromDTOMapper.Map<EventRatingDTO, EventRating>(ratingDTO);
+            rating = mapper.Map<EventRatingDTO, EventRating>(ratingDTO);
             database.EventRatings.Update(rating);
             database.Save();
         }

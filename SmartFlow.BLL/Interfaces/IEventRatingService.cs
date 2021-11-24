@@ -11,6 +11,7 @@ namespace SmartFlow.BLL.Interfaces
     {
         IEnumerable<EventRatingDTO> GetAllEventRatings();
         EventRatingDTO GetEventRating(int id);
+        EventRatingDTO GetRatingByEvent(int eventID);
         int AddEventRating(EventRatingDTO eventRatingDTO);
         void DeleteEventRating(int id);
         void UpdateEventRating(EventRatingDTO eventRatingDTO);
