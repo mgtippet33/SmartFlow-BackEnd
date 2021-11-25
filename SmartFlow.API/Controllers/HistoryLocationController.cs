@@ -113,6 +113,8 @@ namespace SmartFlow.API.Controllers
                     HistoryLocationDTO>(model);
                 historyDTO.Location = location;
                 historyDTO.Visitor = user;
+                historyDTO.Came = true;
+                historyDTO.CameOut = false;
                 historyDTO.ActionTime = DateTime.Now;
                 historyService.AddHistoryLocation(historyDTO);
                 return Ok("History added successfully.");
@@ -129,7 +131,7 @@ namespace SmartFlow.API.Controllers
 
         private bool InvalidHistoryModel(HistoryLocationModel model)
         {
-            if (model == null || model.Action == null)
+            if (model == null)
             {
                 return true;
             }
@@ -161,6 +163,8 @@ namespace SmartFlow.API.Controllers
                 historyDTO.HistoryLocationID = id;
                 historyDTO.Location = location;
                 historyDTO.Visitor = user;
+                historyDTO.CameOut = true;
+                historyDTO.ActionTime = DateTime.Now;
                 historyService.UpdateHistoryLocation(historyDTO);
                 return Ok("History updated successfully.");
             }

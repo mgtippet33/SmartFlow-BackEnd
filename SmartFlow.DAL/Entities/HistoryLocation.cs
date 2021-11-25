@@ -15,7 +15,8 @@ namespace SmartFlow.DAL.Entities
         public int HistoryLocationID { set; get; }
         public int LocationID;
         public int VisitorID;
-        public string Action { set; get; }
+        public bool Came { set; get; }
+        public bool CameOut { set; get; }
         public DateTime ActionTime { set; get; }
 
         [ForeignKey("LocationID")]

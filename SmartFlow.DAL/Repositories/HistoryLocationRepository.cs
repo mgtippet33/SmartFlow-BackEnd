@@ -68,7 +68,8 @@ namespace SmartFlow.DAL.Repositories
                     .Find(history.Visitor.UserID);
                 toUpdateHistory.Location = database.locations
                     .Find(history.Location.LocationID);
-                toUpdateHistory.Action = history.Action ?? toUpdateHistory.Action;
+                toUpdateHistory.Came = history.Came;
+                toUpdateHistory.Came = history.CameOut;
                 toUpdateHistory.ActionTime = history.ActionTime;
             }
         }

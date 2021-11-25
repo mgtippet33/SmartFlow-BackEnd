@@ -63,7 +63,9 @@ namespace SmartFlow.BLL.Services
             var historyExsist = database.HistoryLocations.GetAll()
                 .Any(hist => hist.Location.LocationID ==
                     historyDTO.Location.LocationID &&
-                    hist.Visitor.UserID == historyDTO.Visitor.UserID);
+                    hist.Visitor.UserID == historyDTO.Visitor.UserID &&
+                    hist.Came == historyDTO.Came &&
+                    hist.ActionTime == historyDTO.ActionTime);
             if (historyExsist)
                 throw new ArgumentException();
 
@@ -88,8 +90,11 @@ namespace SmartFlow.BLL.Services
             if (history == null)
                 throw new NullReferenceException();
             var historyExsist = database.HistoryLocations.GetAll()
-                .Any(hist => hist.Location.LocationID == historyDTO.Location.LocationID &&
-                    hist.Visitor.UserID == historyDTO.Visitor.UserID);
+                .Any(hist => hist.Location.LocationID ==
+                    historyDTO.Location.LocationID &&
+                    hist.Visitor.UserID == historyDTO.Visitor.UserID &&
+                    hist.CameOut == historyDTO.CameOut &&
+                    hist.ActionTime == historyDTO.ActionTime);
             if (historyExsist)
                 throw new NullReferenceException();
 
