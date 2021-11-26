@@ -52,6 +52,8 @@ namespace SmartFlow.API
             services.AddTransient<IEventRatingService, EventRatingService>();
             services.AddTransient<IHistoryLocationService,
                 HistoryLocationService>();
+            services.AddTransient<IRouteBuilderService, RouteBuilderService>();
+            services.AddTransient<IStatisticsService, StatisticsService>();
 
             services.AddHttpContextAccessor();
 

@@ -163,6 +163,7 @@ namespace SmartFlow.API.Controllers
                 historyDTO.HistoryLocationID = id;
                 historyDTO.Location = location;
                 historyDTO.Visitor = user;
+                historyDTO.Came = true;
                 historyDTO.CameOut = true;
                 historyDTO.ActionTime = DateTime.Now;
                 historyService.UpdateHistoryLocation(historyDTO);
