@@ -49,6 +49,9 @@ namespace SmartFlow.BLL.Services
                             group history by history.LocationID into hist
                             orderby hist.Count()
                             select hist.Key).ToList();
+            locationsByEvent.RemoveAll(location => locationIDs.Contains(location));
+            locationsByEvent.AddRange(locationIDs);
+            locationIDs = locationsByEvent;
             var locations = database.Locations.GetAll()
                 .Where(location => locationIDs.Contains(location.LocationID))
                 .OrderBy(location =>

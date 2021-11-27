@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartFlow.API.Models;
 using SmartFlow.BLL.DTO;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.API.Controllers
 {
+    [Authorize(Roles = "Visitor")]
     [Route("api/route")]
     [ApiController]
     public class RouteBuilderController : ControllerBase

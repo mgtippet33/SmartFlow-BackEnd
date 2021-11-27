@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SmartFlow.API.Models;
+using SmartFlow.BLL.DTO;
 using SmartFlow.BLL.Interfaces;
 using SmartFlow.DAL.Entities;
 using System;
@@ -19,22 +21,51 @@ namespace SmartFlow.API.Controllers
         UserManager<User> userManager;
         RoleManager<IdentityRole<int>> roleManager;
         private readonly ITokenService tokenService;
+        private IUserService userService;
 
         public AccountController(UserManager<User> userManager,
             RoleManager<IdentityRole<int>> roleManager,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            IUserService userService)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.tokenService = tokenService;
+            this.userService = userService;
 
             mapper = new MapperConfiguration(
                 cfg =>
                 {
                     cfg.CreateMap<UserModel, User>().ReverseMap();
+                    cfg.CreateMap<UserDTO, UserModel>().ReverseMap();
                 })
                 .CreateMapper();
 
+        }
+
+        [Authorize]
+        [Route("profile")]
+        [HttpGet]
+        public ActionResult<UserModel> Profile()
+        {
+            try
+            {
+                var userID = HttpContext.User.Identity!.Name;
+                if (userID == null)
+                {
+                    return BadRequest("The action is available to authorized users.");
+                }
+
+                var userDTO = this.userService.GetUser(Convert.ToInt32(userID));
+                var user = mapper.Map<UserDTO, UserModel>(userDTO);
+
+                return Ok(user);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         // POST api/<AdministratorController>
