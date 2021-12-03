@@ -9,7 +9,7 @@ namespace SmartFlow.BLL.Interfaces
 {
     public interface IEventService
     {
-        IEnumerable<EventDTO> GetAllEvents();
+        IEnumerable<EventDTO> GetAllEvents(int userID);
         EventDTO GetEvent(int id);
         int AddEvent(EventDTO eventDTO);
         void DeleteEvent(int id);

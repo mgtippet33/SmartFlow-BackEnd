@@ -68,6 +68,52 @@ namespace SmartFlow.API.Controllers
             }
         }
 
+        [Authorize]
+        [Route("profile")]
+        [HttpPut]
+        public async Task<ActionResult<UserModel>> UpdateProfile([FromBody] UserModel model)
+        {
+            try
+            {
+                var userID = HttpContext.User.Identity!.Name;
+
+                if (userID == null)
+                {
+                    return BadRequest("The action is available to authorized users.");
+                }
+
+                var user = await userManager.FindByIdAsync(userID);
+                if (model.Name != null && user.Name != model.Name)
+                {
+                    user.Name = model.Name;
+                    await userManager.UpdateAsync(user);
+                }
+                
+                if (model.Email != null && user.Email != model.Email)
+                {
+                    user.Email = model.Email;
+                    await userManager.UpdateAsync(user);
+                }
+
+                if (model.Password != null)
+                {
+                    await userManager.RemovePasswordAsync(user);
+                    await userManager.AddPasswordAsync(user, model.Password);
+                }
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "User profile updated successfully"
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
         // POST api/<AdministratorController>
         [Route("signIn")]
         [HttpPost]
@@ -127,7 +173,11 @@ namespace SmartFlow.API.Controllers
                 {
                     return BadRequest("A user with such data already exists.");
                 }
-                return Created("", "User registered successfully.");
+                return Created("",
+                    new {
+                        status = 201,
+                        message = "User registered successfully.",
+                    });
             }
             catch (Exception ex)
             {

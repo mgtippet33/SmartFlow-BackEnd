@@ -101,6 +101,7 @@ namespace SmartFlow.BLL.Services
                 throw new NullReferenceException();
             var itemExsist = database.Items.GetAll()
                 .Any(itm =>
+                    itm.ItemID != itemDTO.ItemID &&
                     itm.Name == itemDTO.Name &&
                     itm.Location.LocationID == itemDTO.Location.LocationID);
             if (itemExsist)

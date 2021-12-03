@@ -98,12 +98,12 @@ namespace SmartFlow.BLL.Services
             if (location == null)
                 throw new NullReferenceException();
             var locationExsist = database.Locations.GetAll()
-                .Any(loc =>
+                .Any(loc => 
+                    loc.LocationID != locationDTO.LocationID &&
                     loc.Name == locationDTO.Name &&
                     loc.Event.EventID == locationDTO.Event.EventID);
             if (locationExsist)
-                throw new NullReferenceException();
-
+                throw new ArgumentException("This location already exists at this event.");
             location = mapper.Map<LocationDTO, Location>(locationDTO);
             database.Locations.Update(location);
             database.Save();

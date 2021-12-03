@@ -113,7 +113,11 @@ namespace SmartFlow.API.Controllers
                 var itemDTO = mapper.Map<ItemModel, ItemDTO>(model);
                 itemDTO.Location = location;
                 itemService.AddItem(itemDTO);
-                return Ok("Item added successfully.");
+                return Created("", new
+                    {
+                        status = 201,
+                        message = "Item added successfully.",
+                    });
             }
             catch (ArgumentException)
             {
@@ -156,7 +160,11 @@ namespace SmartFlow.API.Controllers
                 itemDTO.ItemID = id;
                 itemDTO.Location = location;
                 itemService.UpdateItem(itemDTO);
-                return Ok("Item updated successfully.");
+                return Ok(new
+                    {
+                        status = 200,
+                        message = "Item updated successfully."
+                    });
             }
             catch (Exception ex)
             {
@@ -174,7 +182,11 @@ namespace SmartFlow.API.Controllers
                 if (item != null)
                 {
                     itemService.DeleteItem(id);
-                    return Ok("Item deleted successfully.");
+                    return Ok(new
+                        {
+                            status = 200,
+                            message = "Item deleted successfully."
+                        });
                 }
                 return NotFound("This item does not exist.");
             }

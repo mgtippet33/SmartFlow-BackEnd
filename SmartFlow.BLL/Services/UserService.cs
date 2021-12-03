@@ -76,8 +76,10 @@ namespace SmartFlow.BLL.Services
             if (user == null)
                 throw new NullReferenceException();
             var userExsist = database.Users.GetAll()
-                .Any(usr => usr.Email == userDTO.Email &&
-                    usr.UserID == userDTO.UserID);
+                .Any(usr =>
+                    usr.UserID != userDTO.UserID &&
+                    usr.Email == userDTO.Email &&
+                    usr.Name == userDTO.Name);
             if (userExsist)
                 throw new NullReferenceException();
 

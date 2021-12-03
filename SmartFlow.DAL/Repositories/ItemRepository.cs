@@ -61,6 +61,7 @@ namespace SmartFlow.DAL.Repositories
                     Find(item.Location.LocationID);
                 toUpdateItem.Name = item.Name ?? toUpdateItem.Name;
                 toUpdateItem.Description = item.Description ?? toUpdateItem.Description;
+                toUpdateItem.Image = item.Image ?? toUpdateItem.Image;
                 toUpdateItem.Link = item.Link ?? toUpdateItem.Link;
             }
         }

@@ -114,7 +114,11 @@ namespace SmartFlow.API.Controllers
                 var locationDTO = mapper.Map<LocationModel, LocationDTO>(model);
                 locationDTO.Event = currentEvent;
                 locationService.AddLocation(locationDTO);
-                return Ok("Location added successfully.");
+                return Created("", new
+                {
+                    status = 201,
+                    message = "Location added successfully.",
+                });
             }
             catch (ArgumentException)
             {
@@ -157,7 +161,11 @@ namespace SmartFlow.API.Controllers
                 locationDTO.LocationID = id;
                 locationDTO.Event = currentEvent;
                 locationService.UpdateLocation(locationDTO);
-                return Ok("Location updated successfully.");
+                return Ok(new
+                {
+                    status = 201,
+                    message = "Location updated successfully.",
+                });
             }
             catch (Exception ex)
             {
@@ -175,7 +183,11 @@ namespace SmartFlow.API.Controllers
                 if (location != null)
                 {
                     locationService.DeleteLocation(id);
-                    return Ok("Location deleted successfully.");
+                    return Ok(new
+                    {
+                        status = 201,
+                        message = "Location deleted successfully.",
+                    });
                 }
                 return NotFound("This location does not exist.");
             }

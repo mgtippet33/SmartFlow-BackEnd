@@ -11,6 +11,7 @@ namespace SmartFlow.API.Models
         public int LocationID { set; get; }
         public string Name { set; get; }
         public string Description { set; get; }
+        public string Image { set; get; }
         public string Link { set; get; }
         public LocationModel Location { set; get; }
     }

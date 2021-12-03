@@ -47,7 +47,12 @@ namespace SmartFlow.API.Controllers
         {
             try
             {
-                var eventsDTO = eventService.GetAllEvents();
+                var userID = HttpContext.User.Identity!.Name;
+                if (userID == null)
+                {
+                    return BadRequest("The action is available to authorized users.");
+                }
+                var eventsDTO = eventService.GetAllEvents(Convert.ToInt32(userID));
                 var events = mapper.Map<IEnumerable<EventDTO>,
                     List<EventModel>>(eventsDTO);
                 return Ok(events);
@@ -85,7 +90,6 @@ namespace SmartFlow.API.Controllers
         {
             try
             {
-
                 var userID = HttpContext.User.Identity!.Name;
                 if (userID == null)
                 {
@@ -100,7 +104,11 @@ namespace SmartFlow.API.Controllers
                 var user = userService.GetUser(Convert.ToInt32(userID));
                 eventDTO.BusinessPartner = user;
                 eventService.AddEvent(eventDTO);
-                return Ok("Event added successfully.");
+                return Created("", new
+                    {
+                        status = 201,
+                        message = "Event added successfully.",
+                    });
             }
             catch (ArgumentException)
             {
@@ -144,7 +152,11 @@ namespace SmartFlow.API.Controllers
                 var user = userService.GetUser(Convert.ToInt32(modelID));
                 eventDTO.BusinessPartner = user;
                 eventService.UpdateEvent(eventDTO);
-                return Ok("Event updated successfully.");
+                return Ok(
+                    new {
+                        status = 200,
+                        message = "Event updated successfully.",
+                    });
             }
             catch (Exception ex)
             {
@@ -162,7 +174,12 @@ namespace SmartFlow.API.Controllers
                 if (eventModel != null)
                 {
                     eventService.DeleteEvent(id);
-                    return Ok("Event deleted successfully.");
+                    return Ok(
+                        new
+                        {
+                            status = 200,
+                            message = "Event deleted successfully.",
+                        });
                 }
                 return NotFound("This event does not exist.");
             }

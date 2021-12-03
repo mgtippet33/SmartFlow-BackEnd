@@ -31,10 +31,16 @@ namespace SmartFlow.BLL.Services
                 ).CreateMapper();
         }
 
-        public IEnumerable<EventDTO> GetAllEvents()
+        public IEnumerable<EventDTO> GetAllEvents(int userID)
         {
             var events = database.Events.GetAll()
-                .OrderBy(ev => ev.EventID);
+                .OrderBy(ev => ev.EventID).ToList();
+
+            var userRole = database.Users.Get(userID).Role;
+            if (userRole != "Administrator")
+            {
+                events.RemoveAll(ev => ev.BusinessPartnerID != userID);
+            }
             var eventsDTO = mapper.Map<IEnumerable<Event>,
                 List<EventDTO>>(events);
 
@@ -84,13 +90,13 @@ namespace SmartFlow.BLL.Services
             if (currentEvent == null)
                 throw new NullReferenceException();
             var eventExsist = database.Events.GetAll()
-                .Any(ev =>
+                .Any(ev => 
+                    ev.EventID != eventDTO.EventID &&
                     ev.Name == eventDTO.Name &&
                     ev.BusinessPartner.UserID ==
                     eventDTO.BusinessPartner.UserID);
             if (eventExsist)
-                throw new NullReferenceException("An event with this name already exists");
-
+                throw new ArgumentException("An event with this name already exists.");
             currentEvent = mapper.Map<EventDTO, Event>(eventDTO);
             database.Events.Update(currentEvent);
             database.Save();
