@@ -24,10 +24,13 @@ namespace SmartFlow.API.Controllers
     {
         private IUserService service;
         private IMapper mapper;
+        UserManager<User> userManager;
 
-        public AdministratorController(IUserService service)
+        public AdministratorController(IUserService service,
+            UserManager<User> userManager)
         {
             this.service = service;
+            this.userManager = userManager;
 
             mapper = new MapperConfiguration(
                 cfg =>
@@ -112,24 +115,41 @@ namespace SmartFlow.API.Controllers
 
         // PUT api/<AdministratorController>/5
         [Authorize(Roles = "Administrator")]
-        [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] UserModel model)
+        [HttpPut("{userID}")]
+        public async Task<ActionResult<UserModel>> Put(int userID, 
+            [FromBody] UserModel model)
         {
             try
             {
-                var user = service.GetUser(id);
-                if (user != null)
+                var user = await userManager.FindByIdAsync(userID.ToString());
+                if (model.Name != null && user.Name != model.Name)
                 {
-                    var userDTO = mapper.Map<UserModel, UserDTO>(model);
-                    userDTO.UserID = id;
-                    service.UpdateUser(userDTO);
-                    return Ok("Changes made successfully.");
+                    user.Name = model.Name;
+                    await userManager.UpdateAsync(user);
                 }
-                return NotFound("This user does not exist.");
+
+                if (model.Email != null && user.Email != model.Email)
+                {
+                    user.Email = model.Email;
+                    await userManager.UpdateAsync(user);
+                }
+
+                if (model.Password != null)
+                {
+                    await userManager.RemovePasswordAsync(user);
+                    await userManager.AddPasswordAsync(user, model.Password);
+                }
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "User profile updated successfully"
+                });
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex);
             }
         }
 
@@ -144,7 +164,10 @@ namespace SmartFlow.API.Controllers
                 if (user != null)
                 {
                     service.DeleteUser(id);
-                    return Ok("User deleted successfully.");
+                    return Ok(new {
+                        status = 200,
+                        message = "User deleted successfully."
+                    });
                 }
                 return NotFound();
             }
