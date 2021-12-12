@@ -12,9 +12,7 @@ namespace SmartFlow.DAL.Repositories
     public class EFWorkUnit : IWorkUnit
     {
         private SmartFlowContext database;
-        private AdministratorRepository administratorRepository;
-        private VisitorRepository visitorRepository;
-        private BusinessPartnerRepository businessPartnerRepository;
+        private UserRepository userRepository;
         private EventRepository eventRepository;
         private LocationRepository locationRepository;
         private ItemRepository itemRepository;
@@ -26,39 +24,15 @@ namespace SmartFlow.DAL.Repositories
             database = context;
         }
 
-        public IRepository<Administrator> Administrators
+        public IRepository<User> Users
         {
             get
             {
-                if (administratorRepository == null)
+                if (userRepository == null)
                 {
-                    administratorRepository = new AdministratorRepository(database);
+                    userRepository = new UserRepository(database);
                 }
-                return administratorRepository;
-            }
-        }
-
-        public IRepository<Visitor> Visitors
-        {
-            get
-            {
-                if (visitorRepository == null)
-                {
-                    visitorRepository = new VisitorRepository(database);
-                }
-                return visitorRepository;
-            }
-        }
-
-        public IRepository<BusinessPartner> BusinessPartners
-        {
-            get
-            {
-                if (businessPartnerRepository == null)
-                {
-                    businessPartnerRepository = new BusinessPartnerRepository(database);
-                }
-                return businessPartnerRepository;
+                return userRepository;
             }
         }
 

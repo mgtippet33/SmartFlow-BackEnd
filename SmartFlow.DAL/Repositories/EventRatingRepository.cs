@@ -37,8 +37,8 @@ namespace SmartFlow.DAL.Repositories
 
         public int Create(EventRating rating)
         {
-            rating.Visitor = database.visitors
-                .Find(rating.Visitor.VisitorID);
+            rating.Visitor = database.users
+                .Find(rating.Visitor.UserID);
             rating.Event = database.events
                 .Find(rating.Event.EventID);
             database.eventRatings.Add(rating);
@@ -64,8 +64,8 @@ namespace SmartFlow.DAL.Repositories
             if (toUpdateRating != null)
             {
                 toUpdateRating.EventRatingID = rating.EventRatingID;
-                toUpdateRating.Visitor = database.visitors
-                    .Find(rating.Visitor.VisitorID);
+                toUpdateRating.Visitor = database.users
+                    .Find(rating.Visitor.UserID);
                 toUpdateRating.Event = database.events
                     .Find(rating.Event.EventID);
                 toUpdateRating.Score = rating.Score;

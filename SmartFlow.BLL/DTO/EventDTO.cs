@@ -11,9 +11,10 @@ namespace SmartFlow.BLL.DTO
         public int EventID { set; get; }
         public string Name { set; get; }
         public string Description { set; get; }
+        public string Image { set; get; }
         public string Coordinates { set; get; }
-        public TimeSpan OpenTime { set; get; }
-        public TimeSpan CloseTime { set; get; }
-        public BusinessPartnerDTO BusinessPartner { set; get; }
+        public string OpenTime { set; get; }
+        public string CloseTime { set; get; }
+        public UserDTO BusinessPartner { set; get; }
     }
 }

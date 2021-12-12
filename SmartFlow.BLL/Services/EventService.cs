@@ -13,36 +13,35 @@ namespace SmartFlow.BLL.Services
 {
     public class EventService : IEventService
     {
-        private IMapper toDTOMapper;
-        private IMapper fromDTOMapper;
+        private IMapper mapper;
         private IWorkUnit database;
 
         public EventService(IWorkUnit database)
         {
             this.database = database;
 
-            toDTOMapper = new MapperConfiguration(
+            mapper = new MapperConfiguration(
                 cfg =>
                 {
                     cfg.CreateMap<Event, EventDTO>().ReverseMap();
-                    cfg.CreateMap<BusinessPartner, BusinessPartnerDTO>().ReverseMap();
-                }
-                ).CreateMapper();
-
-            fromDTOMapper = new MapperConfiguration(
-                cfg =>
-                {
+                    cfg.CreateMap<User, UserDTO>().ReverseMap();
                     cfg.CreateMap<EventDTO, Event>().ReverseMap();
-                    cfg.CreateMap<BusinessPartnerDTO, BusinessPartner>().ReverseMap();
+                    cfg.CreateMap<UserDTO, User>().ReverseMap();
                 }
                 ).CreateMapper();
-
         }
 
-        public IEnumerable<EventDTO> GetAllEvents()
+        public IEnumerable<EventDTO> GetAllEvents(int userID)
         {
-            var events = database.Events.GetAll();
-            var eventsDTO = toDTOMapper.Map<IEnumerable<Event>,
+            var events = database.Events.GetAll()
+                .OrderBy(ev => ev.EventID).ToList();
+
+            var userRole = database.Users.Get(userID).Role;
+            if (userRole != "Administrator")
+            {
+                events.RemoveAll(ev => ev.BusinessPartnerID != userID);
+            }
+            var eventsDTO = mapper.Map<IEnumerable<Event>,
                 List<EventDTO>>(events);
 
             return eventsDTO;
@@ -52,8 +51,8 @@ namespace SmartFlow.BLL.Services
         {
             var currentEvent = database.Events.Get(id);
             if (currentEvent == null)
-                throw new NullReferenceException();
-            var eventDTO = toDTOMapper
+                throw new NullReferenceException("This event does not exist.");
+            var eventDTO = mapper
                 .Map<Event, EventDTO>(currentEvent);
 
             return eventDTO;
@@ -65,12 +64,12 @@ namespace SmartFlow.BLL.Services
                 throw new ArgumentNullException();
             var eventExsist = database.Events.GetAll()
                 .Any(ev => ev.Name == eventDTO.Name &&
-                    ev.BusinessPartner.BusinessPartnerID ==
-                    eventDTO.BusinessPartner.BusinessPartnerID);
+                    ev.BusinessPartner.UserID ==
+                    eventDTO.BusinessPartner.UserID);
             if (eventExsist)
-                throw new ArgumentException();
+                throw new ArgumentException("An event with this name already exists.");
 
-            var currentEvent = fromDTOMapper.Map<EventDTO, Event>(eventDTO);
+            var currentEvent = mapper.Map<EventDTO, Event>(eventDTO);
             var currentEventID = database.Events.Create(currentEvent);
             return currentEventID;
         }
@@ -79,7 +78,7 @@ namespace SmartFlow.BLL.Services
         {
             var currentEvent = database.Events.Get(id);
             if (currentEvent == null)
-                throw new NullReferenceException();
+                throw new NullReferenceException("This event does not exist.");
 
             database.Events.Delete(id);
             database.Save();
@@ -91,14 +90,14 @@ namespace SmartFlow.BLL.Services
             if (currentEvent == null)
                 throw new NullReferenceException();
             var eventExsist = database.Events.GetAll()
-                .Any(ev =>
+                .Any(ev => 
+                    ev.EventID != eventDTO.EventID &&
                     ev.Name == eventDTO.Name &&
-                    ev.BusinessPartner.BusinessPartnerID ==
-                    eventDTO.BusinessPartner.BusinessPartnerID);
+                    ev.BusinessPartner.UserID ==
+                    eventDTO.BusinessPartner.UserID);
             if (eventExsist)
-                throw new NullReferenceException();
-
-            currentEvent = fromDTOMapper.Map<EventDTO, Event>(eventDTO);
+                throw new ArgumentException("An event with this name already exists.");
+            currentEvent = mapper.Map<EventDTO, Event>(eventDTO);
             database.Events.Update(currentEvent);
             database.Save();
         }

@@ -55,7 +55,7 @@ namespace SmartFlow.DAL.Repositories
         public void Update(Location location)
         {
             var toUpdateLocation = database.locations.FirstOrDefault(
-                loc => loc.EventID == location.EventID);
+                loc => loc.LocationID == location.LocationID);
             if (toUpdateLocation != null)
             {
                 toUpdateLocation.LocationID = location.LocationID;

@@ -13,36 +13,44 @@ namespace SmartFlow.BLL.Services
 {
     public class LocationService : ILocationService
     {
-        private IMapper toDTOMapper;
-        private IMapper fromDTOMapper;
+        private IMapper mapper;
         private IWorkUnit database;
 
         public LocationService(IWorkUnit database)
         {
             this.database = database;
 
-            toDTOMapper = new MapperConfiguration(
+            mapper = new MapperConfiguration(
                 cfg =>
                 {
                     cfg.CreateMap<Location, LocationDTO>().ReverseMap();
                     cfg.CreateMap<Event, EventDTO>().ReverseMap();
-                }
-                ).CreateMapper();
-
-            fromDTOMapper = new MapperConfiguration(
-                cfg =>
-                {
+                    cfg.CreateMap<User, UserDTO>().ReverseMap();
                     cfg.CreateMap<LocationDTO, Location>().ReverseMap();
                     cfg.CreateMap<EventDTO, Event>().ReverseMap();
+                    cfg.CreateMap<UserDTO, User>().ReverseMap();
                 }
                 ).CreateMapper();
-
         }
 
         public IEnumerable<LocationDTO> GetAllLocations()
         {
+            var locations = database.Locations.GetAll()
+                .OrderBy(location => location.LocationID);
+            var locationsDTO = mapper.Map<IEnumerable<Location>,
+                List<LocationDTO>>(locations);
+
+            return locationsDTO;
+        }
+
+        public IEnumerable<LocationDTO> GetLocationsByEvent(int eventID)
+        {
             var locations = database.Locations.GetAll();
-            var locationsDTO = toDTOMapper.Map<IEnumerable<Location>,
+            locations = locations.Where(location =>
+                location.Event.EventID == eventID)
+                .OrderBy(location => location.LocationID)
+                .ToList();
+            var locationsDTO = mapper.Map<IEnumerable<Location>,
                 List<LocationDTO>>(locations);
 
             return locationsDTO;
@@ -53,7 +61,7 @@ namespace SmartFlow.BLL.Services
             var location = database.Locations.Get(id);
             if (location == null)
                 throw new NullReferenceException();
-            var locationDTO = toDTOMapper
+            var locationDTO = mapper
                 .Map<Location, LocationDTO>(location);
 
             return locationDTO;
@@ -67,9 +75,9 @@ namespace SmartFlow.BLL.Services
                 .Any(loc => loc.Name == locationDTO.Name &&
                     loc.Event.EventID == locationDTO.Event.EventID);
             if (locationExsist)
-                throw new ArgumentException();
+                throw new ArgumentException("This location already exists at this event.");
 
-            var location = fromDTOMapper.Map<LocationDTO, Location>(locationDTO);
+            var location = mapper.Map<LocationDTO, Location>(locationDTO);
             var locationID = database.Locations.Create(location);
             return locationID;
         }
@@ -90,13 +98,13 @@ namespace SmartFlow.BLL.Services
             if (location == null)
                 throw new NullReferenceException();
             var locationExsist = database.Locations.GetAll()
-                .Any(loc =>
+                .Any(loc => 
+                    loc.LocationID != locationDTO.LocationID &&
                     loc.Name == locationDTO.Name &&
                     loc.Event.EventID == locationDTO.Event.EventID);
             if (locationExsist)
-                throw new NullReferenceException();
-
-            location = fromDTOMapper.Map<LocationDTO, Location>(locationDTO);
+                throw new ArgumentException("This location already exists at this event.");
+            location = mapper.Map<LocationDTO, Location>(locationDTO);
             database.Locations.Update(location);
             database.Save();
         }

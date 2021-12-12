@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartFlow.DAL.Entities
+namespace SmartFlow.BLL.DTO
 {
-    [Table("businessPartner")]
-    public class BusinessPartner
+    public class UserDTO
     {
-        [Key]
-        public int BusinessPartnerID { set; get; }
+        public int UserID { set; get; }
         public string Name { set; get; }
         public string Email { set; get; }
         public string Password { set; get; }
+        public string Role { set; get; }
     }
 }

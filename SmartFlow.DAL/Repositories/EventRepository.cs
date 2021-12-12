@@ -35,8 +35,8 @@ namespace SmartFlow.DAL.Repositories
 
         public int Create(Event currentEvent)
         {
-            currentEvent.BusinessPartner = database.businessPartners
-                .Find(currentEvent.BusinessPartner.BusinessPartnerID);
+            currentEvent.BusinessPartner = database.users
+                .Find(currentEvent.BusinessPartner.UserID);
             database.events.Add(currentEvent);
             database.SaveChanges();
 
@@ -59,8 +59,8 @@ namespace SmartFlow.DAL.Repositories
             if (toUpdateEvent != null)
             {
                 toUpdateEvent.EventID = currrentEvent.EventID;
-                toUpdateEvent.BusinessPartner = database.businessPartners.
-                    Find(currrentEvent.BusinessPartner.BusinessPartnerID);
+                toUpdateEvent.BusinessPartner = database.users.
+                    Find(currrentEvent.BusinessPartner.UserID);
                 toUpdateEvent.Name = currrentEvent.Name ?? toUpdateEvent.Name;
                 toUpdateEvent.Description = currrentEvent.Description ?? toUpdateEvent.Description;
                 toUpdateEvent.Coordinates = currrentEvent.Coordinates ?? toUpdateEvent.Coordinates;
