@@ -37,7 +37,7 @@ namespace SmartFlow.BLL.Services
                 .OrderBy(ev => ev.EventID).ToList();
 
             var userRole = database.Users.Get(userID).Role;
-            if (userRole != "Administrator")
+            if (userRole == "BusinessPartner")
             {
                 events.RemoveAll(ev => ev.BusinessPartnerID != userID);
             }

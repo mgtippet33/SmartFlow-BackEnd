@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.API.Controllers
 {
-    [Authorize(Roles = "Administrator,BusinessPartner")]
     [Route("api/event")]
     [ApiController]
     public class EventController : ControllerBase
@@ -42,6 +41,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // GET: api/<EventController>
+        [Authorize]
         [HttpGet]
         public ActionResult<IEnumerable<EventModel>> Get()
         {
@@ -64,6 +64,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // GET api/<EventController>/5
+        [Authorize]
         [HttpGet("{id}")]
         public ActionResult<EventModel> Get(int id)
         {
@@ -85,6 +86,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // POST api/<EventController>
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpPost]
         public ActionResult<EventModel> Post([FromBody] EventModel model)
         {
@@ -131,6 +133,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // PUT api/<EventController>/5
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpPut("{id}")]
         public ActionResult<EventModel> Put(int id, [FromBody] EventModel model)
         {
@@ -165,6 +168,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // DELETE api/<EventController>/5
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpDelete("{id}")]
         public ActionResult<EventModel> Delete(int id)
         {

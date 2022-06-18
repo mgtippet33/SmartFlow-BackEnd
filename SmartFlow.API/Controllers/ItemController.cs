@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.API.Controllers
 {
-    [Authorize(Roles = "Administrator,BusinessPartner")]
+    [Authorize]
     [Route("api/item")]
     [ApiController]
     public class ItemController : ControllerBase
@@ -95,6 +95,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // POST api/<ItemController>
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpPost]
         public ActionResult<ItemModel> Post([FromBody] ItemModel model)
         {
@@ -140,6 +141,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // PUT api/<ItemController>/5
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpPut("{id}")]
         public ActionResult<ItemModel> Put(int id, [FromBody] ItemModel model)
         {
@@ -173,6 +175,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // DELETE api/<ItemController>/5
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpDelete("{id}")]
         public ActionResult<ItemModel> Delete(int id)
         {

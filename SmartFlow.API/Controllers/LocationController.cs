@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SmartFlow.API.Controllers
 {
-    [Authorize(Roles = "Administrator,BusinessPartner")]
+    [Authorize]
     [Route("api/location")]
     [ApiController]
     public class LocationController : ControllerBase
@@ -96,6 +96,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // POST api/<LocationController>
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpPost]
         public ActionResult<LocationModel> Post([FromBody] LocationModel model)
         {
@@ -141,6 +142,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // PUT api/<LocationController>/5
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpPut("{id}")]
         public ActionResult<LocationModel> Put(int id, [FromBody] LocationModel model)
         {
@@ -174,6 +176,7 @@ namespace SmartFlow.API.Controllers
         }
 
         // DELETE api/<LocationController>/5
+        [Authorize(Roles = "Administrator,BusinessPartner")]
         [HttpDelete("{id}")]
         public ActionResult<LocationModel> Delete(int id)
         {

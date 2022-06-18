@@ -54,6 +54,7 @@ namespace SmartFlow.API
                 HistoryLocationService>();
             services.AddTransient<IRouteBuilderService, RouteBuilderService>();
             services.AddTransient<IStatisticsService, StatisticsService>();
+            services.AddTransient<IMigrationService, MigrationService>();
 
             services.AddHttpContextAccessor();
 

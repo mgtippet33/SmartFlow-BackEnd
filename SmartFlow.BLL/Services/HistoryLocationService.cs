@@ -65,7 +65,7 @@ namespace SmartFlow.BLL.Services
                     historyDTO.Location.LocationID &&
                     hist.Visitor.UserID == historyDTO.Visitor.UserID &&
                     hist.Came == historyDTO.Came &&
-                    hist.ActionTime == historyDTO.ActionTime);
+                    hist.ActionTime.Date == historyDTO.ActionTime.Date);
             if (historyExsist)
                 throw new ArgumentException();
 
@@ -86,7 +86,13 @@ namespace SmartFlow.BLL.Services
 
         public void UpdateHistoryLocation(HistoryLocationDTO historyDTO)
         {
-            var history = database.HistoryLocations.Get(historyDTO.HistoryLocationID);
+            var history = database.HistoryLocations
+                .GetAll()
+                .Where(history => history.VisitorID == historyDTO.Visitor.UserID &&
+                        history.Came == true && history.CameOut == false &&
+                        history.ActionTime.Date == historyDTO.ActionTime.Date)
+                .FirstOrDefault();
+            //var history = database.HistoryLocations.Get(historyDTO.HistoryLocationID);
             if (history == null)
                 throw new NullReferenceException();
             var historyExsist = database.HistoryLocations.GetAll()
@@ -98,6 +104,7 @@ namespace SmartFlow.BLL.Services
             if (historyExsist)
                 throw new NullReferenceException();
 
+            historyDTO.HistoryLocationID = history.HistoryLocationID;
             history = mapper.Map<HistoryLocationDTO, HistoryLocation>(historyDTO);
             database.HistoryLocations.Update(history);
             database.Save();

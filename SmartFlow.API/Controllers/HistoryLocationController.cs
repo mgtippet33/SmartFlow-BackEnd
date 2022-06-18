@@ -139,9 +139,8 @@ namespace SmartFlow.API.Controllers
         }
 
         // PUT api/<HistoryLocationController>/5
-        [HttpPut("{id}")]
-        public ActionResult<HistoryLocationModel> Put(int id,
-            [FromBody] HistoryLocationModel model)
+        [HttpPut]
+        public ActionResult<HistoryLocationModel> Put([FromBody] HistoryLocationModel model)
         {
             try
             {
@@ -160,7 +159,6 @@ namespace SmartFlow.API.Controllers
 
                 var historyDTO = mapper.Map<HistoryLocationModel,
                     HistoryLocationDTO>(model);
-                historyDTO.HistoryLocationID = id;
                 historyDTO.Location = location;
                 historyDTO.Visitor = user;
                 historyDTO.Came = true;

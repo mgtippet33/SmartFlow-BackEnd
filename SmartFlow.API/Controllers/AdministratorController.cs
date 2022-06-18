@@ -24,13 +24,15 @@ namespace SmartFlow.API.Controllers
     {
         private IUserService service;
         private IMapper mapper;
+        private IMigrationService migrationService;
         UserManager<User> userManager;
 
         public AdministratorController(IUserService service,
-            UserManager<User> userManager)
+            UserManager<User> userManager, IMigrationService migrationService)
         {
             this.service = service;
             this.userManager = userManager;
+            this.migrationService = migrationService;
 
             mapper = new MapperConfiguration(
                 cfg =>
@@ -174,6 +176,54 @@ namespace SmartFlow.API.Controllers
             catch (Exception ex)
             {
                 return BadRequest();
+            }
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [Route("~/api/backup")]
+        [HttpGet]
+        public ActionResult BackupDatabase()
+        {
+            try
+            {
+                var migration = migrationService.BackupDatabase();
+                if (migration.Length != 0)
+                    return Ok(new
+                    {
+                        status = 200,
+                        message = migration
+                    });
+                return BadRequest(new
+                {
+                    status = 400,
+                    message = migration
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        [Route("~/api/restore")]
+        public ActionResult RestoreDatabase([FromBody] RestoreModel restore)
+        {
+            try
+            {
+                var migrationStatus = migrationService.RestoreDatabase(restore.RestoreText);
+                if (migrationStatus)
+                    return Ok(new
+                    {
+                        status = 200,
+                        message = "Restore was made successfully."
+                    });
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
             }
         }
     }
